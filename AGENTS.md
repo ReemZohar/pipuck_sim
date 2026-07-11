@@ -12,11 +12,12 @@ All code implementations in the **[pipuck_ws](pipuck_ws)** workspace must adhere
 2. **Reset Safety**: The controller's `Reset()` method must completely reinitialize all internal state variables to starting values. Never assume variables are zeroed out across simulation resets.
 3. **Zero Dynamic Allocations**: Avoid heap allocations (`new`/`delete`, unreserved `std::vector::push_back`) inside `ControlStep()` to keep the simulation lightweight.
 4. **Numerical Stability**: Ensure division-by-zero checks are in place for repulsion forces and vector normalizations using protection epsilons ($\epsilon$).
-5. **Serialization Safety**: Ensure packet struct packing/alignment maps exactly between the RAB transmitter and receiver, and verify that `rab_data_size` in the `.argos` files matches the message struct size (16 bytes).
+5. **Serialization Safety**: Ensure packet struct packing/alignment maps exactly between the RAB transmitter and receiver, and verify that `rab_data_size` in the `.argos` files matches the message struct size (10 bytes).
 6. **Concise Implementations**: Keep implementations as short and simple as possible. Avoid boilerplate, redundant logic, and over-engineering.
 7. **Meaningful Comments Only**: Do not write comments that restate what the code is doing (e.g. `i++; // increment i`). Only add comments to explain the *why* (non-obvious rationale, design decisions, or complex algorithms).
 8. **Self-Documenting Code**: Use descriptive, intention-revealing names for functions, classes, and variables (e.g. `GetLowestPressureNeighbor()`) to make the code self-explanatory and reduce comment noise.
-9. **No Hardcoded Magic Numbers**: Extract constants (such as sensor thresholds, physical offsets, and weights) into config parameter blocks or explicit constant variables instead of hardcoding them in inline calculations.
+9. **snake_case Naming**: Use `snake_case` for all function names and variable names (e.g. `deserialize_msg`, `sender_est_pressure`). Class names use `PascalCase` with a leading capital letter (e.g. `SPhybotMessage`, `CPhybotController`).
+10. **No Hardcoded Magic Numbers**: Extract constants (such as sensor thresholds, physical offsets, and weights) into config parameter blocks or explicit constant variables instead of hardcoding them in inline calculations.
 
 ---
 
