@@ -19,6 +19,8 @@ namespace argos {
    }
 
    void Controller0::ControlStep() {
+      m_pcWheels->SetLinearVelocity(5.0f, 5.0f);
+      
       /* Clear the data buffer before writing new data */
       m_pcRABAct->ClearData();
       
