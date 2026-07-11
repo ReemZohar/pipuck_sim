@@ -11,17 +11,19 @@
 
 namespace argos {
 
-   class Controller0 : public CCI_Controller {
+   class PhybotController : public CCI_Controller {
 
    public:
 
-      Controller0() {}
+      PhybotController() {}
 
-      virtual ~Controller0() {}
+      virtual ~PhybotController() {}
 
       void Init(TConfigurationNode& t_tree) override;
 
       void ControlStep() override;
+
+      void Reset() override;
 
    private:
       CCI_PiPuckDifferentialDriveActuator* m_pcWheels = nullptr;
