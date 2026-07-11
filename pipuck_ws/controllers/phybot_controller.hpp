@@ -11,13 +11,13 @@
 
 namespace argos {
 
-   class PhybotController : public CCI_Controller {
+   class CPhybotController : public CCI_Controller {
 
    public:
 
-      PhybotController() {}
+      CPhybotController() {}
 
-      virtual ~PhybotController() {}
+      virtual ~CPhybotController() {}
 
       void Init(TConfigurationNode& t_tree) override;
 

@@ -4,7 +4,7 @@
 
 namespace argos {
 
-	void PhybotController::Init(TConfigurationNode& t_tree) {
+	void CPhybotController::Init(TConfigurationNode& t_tree) {
 		/* Get the actuators and sensors */
 		m_pcWheels = GetActuator<CCI_PiPuckDifferentialDriveActuator>("pipuck_differential_drive");
 		m_pcColoredLEDs = GetActuator<CCI_PiPuckColorLEDsActuator>("pipuck_leds");
@@ -15,7 +15,7 @@ namespace argos {
 		m_pcRABAct = GetActuator<CCI_RangeAndBearingActuator>("range_and_bearing");
 	}
 
-	void PhybotController::ControlStep() {
+	void CPhybotController::ControlStep() {
       m_pcWheels->SetLinearVelocity(5.0f, 5.0f);
 
 		/* Clear the data buffer before writing new data */
@@ -44,10 +44,10 @@ namespace argos {
 		}
 	}
 
-	void PhybotController::Reset() {
+	void CPhybotController::Reset() {
 		/* Reset is empty for the Phase 0 skeleton.
 		   State variables will be added in Phase 1 and reinitialized here. */
 	}
 
-	REGISTER_CONTROLLER(PhybotController, "phybot_controller");
+	REGISTER_CONTROLLER(CPhybotController, "phybot_controller");
 }
