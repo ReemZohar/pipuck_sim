@@ -13,8 +13,8 @@
   <!-- * Controllers * -->
   <!-- *************** -->
   <controllers>
-    <controller0 library="build/lib/libpipuck_controller0"
-                     id="controller0">
+    <phybot_controller library="build/lib/libpipuck_phybot_controller"
+                     id="phybot_controller">
       <actuators>
         <pipuck_differential_drive implementation="default" />
         <pipuck_leds implementation="color" medium="leds" />
@@ -27,7 +27,7 @@
         <range_and_bearing implementation="medium" medium="rab" show_rays="true" />
       </sensors>
       <params />
-    </controller0>
+    </phybot_controller>
   </controllers>
 
   <!-- ****************** -->
@@ -49,12 +49,12 @@
     <!-- robots -->
     <pipuck id="pipuck0" led_medium="leds" rab_data_size="2" rab_range="1.5">
       <body position="0.0,0.0,0"/>
-      <controller config="controller0"/>
+      <controller config="phybot_controller"/>
     </pipuck>
     
     <pipuck id="pipuck1" led_medium="leds" rab_data_size="2" rab_range="1.5">
       <body position="1.0,0.0,0"/>
-      <controller config="controller0"/>
+      <controller config="phybot_controller"/>
     </pipuck>
 
   </arena>

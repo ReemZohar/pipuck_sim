@@ -20,18 +20,13 @@ This plan outlines the design, implementation, and testing of the swarm optimiza
 Verify the build pipeline for a new controller before writing algorithm code to avoid debugging cmake/linkage issues later.
 
 ### Task 0.1: Create Controller Skeleton
- * **Mini-Task 0.1.1:** Create [phybot_controller.hpp](controllers/phybot_controller.hpp) inheriting from `CCI_Controller` with basic `Init()`, `ControlStep()`, `Reset()`, and `Destroy()` declarations.
+ * **Mini-Task 0.1.1:** Create [phybot_controller.hpp](controllers/phybot_controller.hpp) inheriting from `CCI_Controller` with basic `Init()`, `ControlStep()`, and `Reset()` declarations.
   * `Reset()` — Called when the simulation is restarted. Reinitializes the controller's state to starting values (clear message history, reset pressure to 0, reset food counters, reset roles to NORMAL).
  * **Mini-Task 0.1.2:** Create [phybot_controller.cpp](controllers/phybot_controller.cpp) with empty implementations and register it via `REGISTER_CONTROLLER(CPhybotController, "phybot_controller")`.
  * **Mini-Task 0.1.3:** Register the new controller source files in [CMakeLists.txt](CMakeLists.txt).
 
 ### Task 0.2: Verify Build & Registration
 * **Mini-Task 0.2.1:** Compile the workspace using `./compile_ws.sh`.
-* **Mini-Task 0.2.2:** Verify that the ARGoS query tool finds the new plugin:
-  ```bash
-  source ../argos3/build/setup_env.sh
-  argos3 -q phybot_controller
-  ```
 
 ---
 
