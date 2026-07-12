@@ -15,4 +15,4 @@ echo "Running compile_ws.sh..."
 
 # Run the simulation using ARGoS
 echo "Running simulation..."
-argos3 -c experiments/config_rab.argos
+argos3 -c experiments/phybot_test.argos
