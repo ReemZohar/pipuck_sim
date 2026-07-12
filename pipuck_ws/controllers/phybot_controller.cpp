@@ -1,6 +1,4 @@
 #include "phybot_controller.hpp"
-#include <argos3/core/simulator/space/space.h>
-#include <argos3/core/utility/datatypes/color.h>
 
 namespace argos {
 
@@ -85,6 +83,12 @@ namespace argos {
 		while(!messages.empty() && (minTimestamp > messages.front().timestamp)) {
 			messages.pop_front();
 		}
+	}
+
+	void CPhybotController::updateLEDs() {
+		if(m_eRole == ERobotRole::NORMAL) m_pcColoredLEDs->SetRingLEDs(CColor::WHITE);
+		else if(m_eRole == ERobotRole::SOURCE) m_pcColoredLEDs->SetRingLEDs(CColor::GREEN);
+	 	else m_pcColoredLEDs->SetRingLEDs(CColor::BLUE);
 	}
 
 	REGISTER_CONTROLLER(CPhybotController, "phybot_controller");
