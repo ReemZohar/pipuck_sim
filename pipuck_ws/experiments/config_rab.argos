@@ -27,6 +27,23 @@
         <range_and_bearing implementation="medium" medium="rab" show_rays="true" />
       </sensors>
       <params>
+        <!-- Di-PL parameters -->
+        <alpha value="0.1"/>
+        <kp value="1.0"/>
+        <gammaQ value="0.01"/>
+        <deltaT value="0.1"/>
+        <i0 value="0.01"/>
+        <pMax value="1.0"/>
+
+        <!-- Motion parameters -->
+        <wp value="0.375"/>
+        <betaD value="0.01"/>
+        <alphaD value="0.01"/>
+        <epsilonD value="0.001"/>
+        <ie value="0.1"/>
+        <gamma value="1.0"/>
+        <k value="3"/>
+        <ds value="0.3"/>
         <H value="10"/>
       </params>
     </phybot_controller>

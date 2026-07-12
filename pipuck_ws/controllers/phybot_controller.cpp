@@ -14,6 +14,28 @@ namespace argos {
 		m_pcRABSens = GetSensor<CCI_RangeAndBearingSensor>("range_and_bearing");
 		m_pcRABAct = GetActuator<CCI_RangeAndBearingActuator>("range_and_bearing");
 
+		// Parse parameters from XML
+		TConfigurationNode& tParams = GetNode(t_tree, "params");
+
+		// Di-PL parameters
+		GetNodeAttribute(tParams, "alpha", m_fAlpha);
+		GetNodeAttribute(tParams, "kp", m_fKp);
+		GetNodeAttribute(tParams, "gammaQ", m_fGammaQ);
+		GetNodeAttribute(tParams, "deltaT", m_fDeltaT);
+		GetNodeAttribute(tParams, "i0", m_fI0);
+		GetNodeAttribute(tParams, "pMax", m_fPMax);
+
+		// Motion parameters
+		GetNodeAttribute(tParams, "wp", m_fWp);
+		GetNodeAttribute(tParams, "betaD", m_fBetaD);
+		GetNodeAttribute(tParams, "alphaD", m_fAlphaD);
+		GetNodeAttribute(tParams, "epsilonD", m_fEpsilonD);
+		GetNodeAttribute(tParams, "ie", m_fIe);
+		GetNodeAttribute(tParams, "gamma", m_fGamma);
+		GetNodeAttribute(tParams, "k", m_fK);
+		GetNodeAttribute(tParams, "ds", m_fDs);
+		GetNodeAttribute(tParams, "H", m_unH);
+
 		// Initialize state variables
 		m_unTimestamp = 0;
 		for(u_int8_t i = 0; i < NUM_SECTORS; i++) {

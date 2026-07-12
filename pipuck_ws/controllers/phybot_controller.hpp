@@ -38,14 +38,32 @@ namespace argos {
       // Parameters
       // Pi-Puck has 8 rangefinders
       static constexpr u_int8_t NUM_SECTORS = 8;
+
+      // Di-PL parameters
+      Real m_fAlpha;
+      Real m_fKp;
+      Real m_fGammaQ;
+      Real m_fDeltaT;
+      Real m_fI0;
+      Real m_fPMax;
+
+      // Motion parameters
+      Real m_fWp;
+      Real m_fBetaD;
+      Real m_fAlphaD;
+      Real m_fEpsilonD;
+      Real m_fIe;
+      Real m_fGamma;
+      Real m_fK;
+      Real m_fDs;
       u_int32_t m_unH;
 
       // State variables
       ERobotRole m_eRole;
       u_int32_t m_unTimestamp;
-      _Float16 m_fEsimatedPressure;
-      _Float16 m_fFoodReceived;
-      _Float16 m_fSectorConductivities[NUM_SECTORS];
+      Real m_fEsimatedPressure;
+      Real m_fFoodReceived;
+      Real m_fSectorConductivities[NUM_SECTORS];
       std::deque<SPhybotMessage> m_messagesIn;
       std::deque<SPhybotMessage> m_messagesOut;
 
