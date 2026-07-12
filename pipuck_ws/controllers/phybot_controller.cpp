@@ -14,6 +14,26 @@ namespace argos {
 		m_pcRABSens = GetSensor<CCI_RangeAndBearingSensor>("range_and_bearing");
 		m_pcRABAct = GetActuator<CCI_RangeAndBearingActuator>("range_and_bearing");
 
+		// t_tree IS the <params> node
+		// Di-PL parameters
+		GetNodeAttribute(GetNode(t_tree, "alpha"), "value", m_fAlpha);
+		GetNodeAttribute(GetNode(t_tree, "kp"), "value", m_fKp);
+		GetNodeAttribute(GetNode(t_tree, "gammaQ"), "value", m_fGammaQ);
+		GetNodeAttribute(GetNode(t_tree, "deltaT"), "value", m_fDeltaT);
+		GetNodeAttribute(GetNode(t_tree, "i0"), "value", m_fI0);
+		GetNodeAttribute(GetNode(t_tree, "pMax"), "value", m_fPMax);
+
+		// Motion parameters
+		GetNodeAttribute(GetNode(t_tree, "wp"), "value", m_fWp);
+		GetNodeAttribute(GetNode(t_tree, "betaD"), "value", m_fBetaD);
+		GetNodeAttribute(GetNode(t_tree, "alphaD"), "value", m_fAlphaD);
+		GetNodeAttribute(GetNode(t_tree, "epsilonD"), "value", m_fEpsilonD);
+		GetNodeAttribute(GetNode(t_tree, "ie"), "value", m_fIe);
+		GetNodeAttribute(GetNode(t_tree, "gamma"), "value", m_fGamma);
+		GetNodeAttribute(GetNode(t_tree, "k"), "value", m_fK);
+		GetNodeAttribute(GetNode(t_tree, "ds"), "value", m_fDs);
+		GetNodeAttribute(GetNode(t_tree, "H"), "value", m_unH);
+
 		// Initialize state variables
 		m_unTimestamp = 0;
 		for(u_int8_t i = 0; i < NUM_SECTORS; i++) {
