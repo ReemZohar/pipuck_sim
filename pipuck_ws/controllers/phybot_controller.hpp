@@ -36,12 +36,16 @@ namespace argos {
       CCI_RangeAndBearingActuator* m_pcRABAct = nullptr;
 
       // Parameters
+      // Pi-Puck has 8 rangefinders
+      static constexpr u_int8_t NUM_SECTORS = 8;
       u_int32_t m_unH;
 
+      // State variables
       ERobotRole m_eRole;
       u_int32_t m_unTimestamp;
-      _Float16 esimatedPressure;
-      _Float16 foodReceived;
+      _Float16 m_fEsimatedPressure;
+      _Float16 m_fFoodReceived;
+      _Float16 m_fSectorConductivities[NUM_SECTORS];
       std::deque<SPhybotMessage> m_messagesIn;
       std::deque<SPhybotMessage> m_messagesOut;
 

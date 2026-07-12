@@ -14,7 +14,11 @@ namespace argos {
 		m_pcRABSens = GetSensor<CCI_RangeAndBearingSensor>("range_and_bearing");
 		m_pcRABAct = GetActuator<CCI_RangeAndBearingActuator>("range_and_bearing");
 
+		// Initialize state variables
 		m_unTimestamp = 0;
+		for(u_int8_t i = 0; i < NUM_SECTORS; i++) {
+			m_fSectorConductivities[i] = 0;
+		}
 	}
 
 	void CPhybotController::ControlStep() {
@@ -42,6 +46,9 @@ namespace argos {
 
 	void CPhybotController::Reset() {
 		m_unTimestamp = 0;
+		for(u_int8_t i = 0; i < NUM_SECTORS; i++) {
+			m_fSectorConductivities[i] = 0;
+		}
 		m_messagesIn.clear();
 		m_messagesOut.clear();
 	}
