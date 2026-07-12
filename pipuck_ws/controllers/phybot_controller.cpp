@@ -13,10 +13,12 @@ namespace argos {
 		m_pcRangefinders = GetSensor<CCI_PiPuckRangefindersSensor>("pipuck_rangefinders");
 		m_pcRABSens = GetSensor<CCI_RangeAndBearingSensor>("range_and_bearing");
 		m_pcRABAct = GetActuator<CCI_RangeAndBearingActuator>("range_and_bearing");
+
+		m_unTimestamp = 0;
 	}
 
 	void CPhybotController::ControlStep() {
-      m_pcWheels->SetLinearVelocity(5.0f, 5.0f);
+      	m_pcWheels->SetLinearVelocity(5.0f, 5.0f);
 
 		/* Serialize and broadcast an outgoing message */
 		SPhybotMessage out_msg = {0, 0, 0, 0};
@@ -34,11 +36,31 @@ namespace argos {
 				     << " timestamp=" << in_msg.timestamp << std::endl;
 			}
 		}
+
+		m_unTimestamp++;
 	}
 
 	void CPhybotController::Reset() {
-		/* Reset is empty for the Phase 0 skeleton.
-		   State variables will be added in Phase 1 and reinitialized here. */
+		m_unTimestamp = 0;
+		m_lstMessagesIn.clear();
+		m_lstMessagesOut.clear();
+	}
+
+	void CPhybotController::remove_old_messages() {
+		// No old messages yet scenario
+		if(m_unTimestamp <= m_unH) return;
+
+		u_int32_t min_timestamp = m_unTimestamp - m_unH;
+		// Remove old messages from both incoming and outgoing message lists
+		remove_old_messages(m_lstMessagesIn, min_timestamp);
+		remove_old_messages(m_lstMessagesOut, min_timestamp);
+	}
+
+	void CPhybotController::remove_old_messages(std::deque<SPhybotMessage>& messages, u_int32_t min_timestamp) {
+		// Remove old messages from the given message list
+		while(!messages.empty() && (min_timestamp > messages.front().timestamp)) {
+			messages.pop_front();
+		}
 	}
 
 	REGISTER_CONTROLLER(CPhybotController, "phybot_controller");

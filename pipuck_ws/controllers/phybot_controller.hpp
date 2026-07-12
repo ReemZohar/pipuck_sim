@@ -9,21 +9,18 @@
 #include <argos3/plugins/robots/generic/control_interface/ci_range_and_bearing_actuator.h>
 #include <argos3/core/simulator/simulator.h>
 #include <common/phybot_message.h>
+#include <deque>
 
 namespace argos {
 
    class CPhybotController : public CCI_Controller {
 
    public:
-
       CPhybotController() {}
-
       virtual ~CPhybotController() {}
 
       void Init(TConfigurationNode& t_tree) override;
-
       void ControlStep() override;
-
       void Reset() override;
 
    private:
@@ -34,5 +31,17 @@ namespace argos {
       CCI_PiPuckSystemSensor* m_pcSystem = nullptr;
       CCI_RangeAndBearingSensor* m_pcRABSens = nullptr;
       CCI_RangeAndBearingActuator* m_pcRABAct = nullptr;
+
+      // Parameters
+      u_int32_t m_unH;
+
+      u_int32_t m_unTimestamp;
+      std::deque<SPhybotMessage> m_lstMessagesIn;
+      std::deque<SPhybotMessage> m_lstMessagesOut;
+
+      // Removes old messages from the incoming and outgoing message lists
+      void remove_old_messages();
+      // Removes old messages (sent/received before the minimum timestamp) from the given message list
+      void remove_old_messages(std::deque<SPhybotMessage>& messages, u_int32_t min_timestamp);
    };
 }
