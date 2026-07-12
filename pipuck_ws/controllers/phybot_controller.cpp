@@ -13,32 +13,58 @@ namespace argos {
 		m_pcRangefinders = GetSensor<CCI_PiPuckRangefindersSensor>("pipuck_rangefinders");
 		m_pcRABSens = GetSensor<CCI_RangeAndBearingSensor>("range_and_bearing");
 		m_pcRABAct = GetActuator<CCI_RangeAndBearingActuator>("range_and_bearing");
+
+		// Initialize state variables
+		m_unTimestamp = 0;
+		for(u_int8_t i = 0; i < NUM_SECTORS; i++) {
+			m_fSectorConductivities[i] = 0;
+		}
 	}
 
 	void CPhybotController::ControlStep() {
-      m_pcWheels->SetLinearVelocity(5.0f, 5.0f);
+      	m_pcWheels->SetLinearVelocity(5.0f, 5.0f);
 
 		/* Serialize and broadcast an outgoing message */
-		SPhybotMessage out_msg = {0, 0, 0, 0};
+		SPhybotMessage outMsg = {0, 0, 0, 0};
 		m_pcRABAct->ClearData();
-		m_pcRABAct->SetData(seriallize_msg(out_msg));
+		m_pcRABAct->SetData(seriallizeMsg(outMsg));
 
 		/* Read and deserialize incoming RAB messages */
 		const CCI_RangeAndBearingSensor::TReadings& packets = m_pcRABSens->GetReadings();
 		for(size_t i = 0; i < packets.size(); ++i) {
 			if(packets[i].Data.Size() >= sizeof(SPhybotMessage)) {
-				SPhybotMessage in_msg = deserialize_msg(packets[i].Data);
-				RLOG << "Received: pressure=" << static_cast<float>(in_msg.sender_est_pressure)
-				     << " conductivity=" << static_cast<float>(in_msg.edge_conductivity)
-				     << " flow=" << static_cast<float>(in_msg.edge_flow)
-				     << " timestamp=" << in_msg.timestamp << std::endl;
+				SPhybotMessage inMsg = deserializeMsg(packets[i].Data);
+				RLOG << "Received: pressure=" << static_cast<float>(inMsg.senderEstPressure)
+				     << " conductivity=" << static_cast<float>(inMsg.edgeConductivity)
+				     << " flow=" << static_cast<float>(inMsg.edgeFlow)
+				     << " timestamp=" << inMsg.timestamp << std::endl;
 			}
 		}
+
+		m_unTimestamp++;
 	}
 
 	void CPhybotController::Reset() {
-		/* Reset is empty for the Phase 0 skeleton.
-		   State variables will be added in Phase 1 and reinitialized here. */
+		m_unTimestamp = 0;
+		for(u_int8_t i = 0; i < NUM_SECTORS; i++) {
+			m_fSectorConductivities[i] = 0;
+		}
+		m_messagesIn.clear();
+		m_messagesOut.clear();
+	}
+
+	void CPhybotController::removeOldMessages() {
+		if(m_unTimestamp <= m_unH) return;
+
+		u_int32_t minTimestamp = m_unTimestamp - m_unH;
+		removeOldMessages(m_messagesIn, minTimestamp);
+		removeOldMessages(m_messagesOut, minTimestamp);
+	}
+
+	void CPhybotController::removeOldMessages(std::deque<SPhybotMessage>& messages, u_int32_t minTimestamp) {
+		while(!messages.empty() && (minTimestamp > messages.front().timestamp)) {
+			messages.pop_front();
+		}
 	}
 
 	REGISTER_CONTROLLER(CPhybotController, "phybot_controller");

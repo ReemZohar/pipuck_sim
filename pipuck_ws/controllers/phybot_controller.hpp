@@ -8,22 +8,22 @@
 #include <argos3/plugins/robots/generic/control_interface/ci_range_and_bearing_sensor.h>
 #include <argos3/plugins/robots/generic/control_interface/ci_range_and_bearing_actuator.h>
 #include <argos3/core/simulator/simulator.h>
-#include <common/phybot_message.h>
+
+#include "../common/phybot_message.h"
+#include "../common/robot_role.h"
+
+#include <deque>
 
 namespace argos {
 
    class CPhybotController : public CCI_Controller {
 
    public:
-
       CPhybotController() {}
-
       virtual ~CPhybotController() {}
 
       void Init(TConfigurationNode& t_tree) override;
-
       void ControlStep() override;
-
       void Reset() override;
 
    private:
@@ -34,5 +34,22 @@ namespace argos {
       CCI_PiPuckSystemSensor* m_pcSystem = nullptr;
       CCI_RangeAndBearingSensor* m_pcRABSens = nullptr;
       CCI_RangeAndBearingActuator* m_pcRABAct = nullptr;
+
+      // Parameters
+      // Pi-Puck has 8 rangefinders
+      static constexpr u_int8_t NUM_SECTORS = 8;
+      u_int32_t m_unH;
+
+      // State variables
+      ERobotRole m_eRole;
+      u_int32_t m_unTimestamp;
+      _Float16 m_fEsimatedPressure;
+      _Float16 m_fFoodReceived;
+      _Float16 m_fSectorConductivities[NUM_SECTORS];
+      std::deque<SPhybotMessage> m_messagesIn;
+      std::deque<SPhybotMessage> m_messagesOut;
+
+      void removeOldMessages();
+      void removeOldMessages(std::deque<SPhybotMessage>& messages, u_int32_t minTimestamp);
    };
 }
