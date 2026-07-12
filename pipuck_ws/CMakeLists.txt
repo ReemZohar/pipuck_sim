@@ -12,8 +12,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # Find ARGoS core and modules
 find_package(ARGoS REQUIRED)
-# Include ARGoS directories
-include_directories(${ARGOS_INCLUDE_DIR})
+# Include ARGoS and local directories
+include_directories(
+  ${ARGOS_INCLUDE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}
+)
 # Link ARGoS libraries
 link_directories(${ARGOS_LIBRARY_DIR})
 

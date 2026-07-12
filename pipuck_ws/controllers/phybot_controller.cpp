@@ -18,29 +18,21 @@ namespace argos {
 	void CPhybotController::ControlStep() {
       m_pcWheels->SetLinearVelocity(5.0f, 5.0f);
 
-		/* Clear the data buffer before writing new data */
+		/* Serialize and broadcast an outgoing message */
+		SPhybotMessage out_msg = {0, 0, 0, 0};
 		m_pcRABAct->ClearData();
+		m_pcRABAct->SetData(seriallize_msg(out_msg));
 
-		/* Only set data if size is at least 2 */
-		if (m_pcRABAct->GetSize() >= 2) {
-			m_pcRABAct->SetData(0, 42);
-			m_pcRABAct->SetData(1, 13);
-		}
-
-		/* Log the size of the data we can send */
-		RLOG << "RAB Max Data Size: " << m_pcRABAct->GetSize() << std::endl;
-
-		/* Read RAB data */
-		const CCI_RangeAndBearingSensor::TReadings& tPackets = m_pcRABSens->GetReadings();
-		for(size_t i = 0; i < tPackets.size(); ++i) {
-			RLOG << "Received RAB message from dist " << tPackets[i].Range
-			     << " angle: " << tPackets[i].HorizontalBearing
-			     << " size: " << tPackets[i].Data.Size();
-			if (tPackets[i].Data.Size() >= 2) {
-				RLOG << " with data[0]=" << (int)tPackets[i].Data[0]
-				     << " data[1]=" << (int)tPackets[i].Data[1];
+		/* Read and deserialize incoming RAB messages */
+		const CCI_RangeAndBearingSensor::TReadings& packets = m_pcRABSens->GetReadings();
+		for(size_t i = 0; i < packets.size(); ++i) {
+			if(packets[i].Data.Size() >= sizeof(SPhybotMessage)) {
+				SPhybotMessage in_msg = deserialize_msg(packets[i].Data);
+				RLOG << "Received: pressure=" << static_cast<float>(in_msg.sender_est_pressure)
+				     << " conductivity=" << static_cast<float>(in_msg.edge_conductivity)
+				     << " flow=" << static_cast<float>(in_msg.edge_flow)
+				     << " timestamp=" << in_msg.timestamp << std::endl;
 			}
-			RLOG << std::endl;
 		}
 	}
 
