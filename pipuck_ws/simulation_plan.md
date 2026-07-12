@@ -66,9 +66,9 @@ Implement Algorithm 1 from the paper to enable the reinforcement of shortest pat
 
 ### Task 2.1: Implement Pressure Updates (Hagen-Poiseuille)
 * **Mini-Task 2.1.1:** Write the incoming pressure estimation function `CalculateIncomingPressure()` (Eq. 1):
-  $$\hat{P}_{in}(i) = \frac{1}{|S(i)|} \sum_{j \in S(i)} \left( \hat{p}_j - \frac{L_{ji} Q_{ji}}{D_{ji}} \right)$$
+  $$\hat{P}_{in}(i) = \frac{1}{\lvert S(i) \rvert} \sum_{j \in S(i)} \left( \hat{p}_j - \frac{L_{ji} Q_{ji}}{D_{ji}} \right)$$
 * **Mini-Task 2.1.2:** Write the outgoing pressure estimation function `CalculateOutgoingPressure()` (Eq. 2):
-  $$\hat{P}_{out}(i) = \frac{1}{|R(i)|} \sum_{j \in R(i)} \left( \hat{p}_j + \frac{L_{ij} Q_{ij}}{D_{ij}} \right)$$
+  $$\hat{P}_{out}(i) = \frac{1}{\lvert R(i) \rvert} \sum_{j \in R(i)} \left( \hat{p}_j + \frac{L_{ij} Q_{ij}}{D_{ij}} \right)$$
 * **Mini-Task 2.1.3:** Implement the exponential smoothing update (Eq. 3) to update the robot's pressure $\hat{p}_i$:
   $$\hat{p}_i = (1 - \alpha) \hat{p}_i^{t-1} + \alpha \cdot g(x(t))$$
 
@@ -77,7 +77,7 @@ Implement Algorithm 1 from the paper to enable the reinforcement of shortest pat
 * **Mini-Task 2.2.2:** Select the receiver (one per sector) with the lowest pressure to maximize flow.
 * **Mini-Task 2.2.3:** Calculate estimated outgoing flux $\hat{Q}_{ij}$ and normalize it to conserve flow (Eq. 5).
 * **Mini-Task 2.2.4:** Implement the conductivity update rule (Eq. 6) to decay/reinforce the link values:
-  $$\frac{D_{ij}^{t+1} - D_{ij}^t}{\delta t} = f(|Q_{ij}^t|) - D_{ij}^{t+1}$$
+  $$\frac{D_{ij}^{t+1} - D_{ij}^t}{\delta t} = f(\lvert Q_{ij}^t \rvert) - D_{ij}^{t+1}$$
 
 ---
 
