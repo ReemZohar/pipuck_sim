@@ -36,8 +36,8 @@ namespace argos {
       u_int32_t m_unH;
 
       u_int32_t m_unTimestamp;
-      std::deque<SPhybotMessage> m_lstMessagesIn;
-      std::deque<SPhybotMessage> m_lstMessagesOut;
+      std::deque<SPhybotMessage> m_messages_in;
+      std::deque<SPhybotMessage> m_messages_out;
 
       // Removes old messages from the incoming and outgoing message lists
       void remove_old_messages();

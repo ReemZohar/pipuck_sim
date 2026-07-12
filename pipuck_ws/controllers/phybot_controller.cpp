@@ -42,8 +42,8 @@ namespace argos {
 
 	void CPhybotController::Reset() {
 		m_unTimestamp = 0;
-		m_lstMessagesIn.clear();
-		m_lstMessagesOut.clear();
+		m_messages_in.clear();
+		m_messages_out.clear();
 	}
 
 	void CPhybotController::remove_old_messages() {
@@ -52,8 +52,8 @@ namespace argos {
 
 		u_int32_t min_timestamp = m_unTimestamp - m_unH;
 		// Remove old messages from both incoming and outgoing message lists
-		remove_old_messages(m_lstMessagesIn, min_timestamp);
-		remove_old_messages(m_lstMessagesOut, min_timestamp);
+		remove_old_messages(m_messages_in, min_timestamp);
+		remove_old_messages(m_messages_out, min_timestamp);
 	}
 
 	void CPhybotController::remove_old_messages(std::deque<SPhybotMessage>& messages, u_int32_t min_timestamp) {
