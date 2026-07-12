@@ -16,7 +16,7 @@ All code implementations in the **[pipuck_ws](pipuck_ws)** workspace must adhere
 6. **Concise Implementations**: Keep implementations as short and simple as possible. Avoid boilerplate, redundant logic, and over-engineering.
 7. **Meaningful Comments Only**: Do not write comments that restate what the code is doing (e.g. `i++; // increment i`). Only add comments to explain the *why* (non-obvious rationale, design decisions, or complex algorithms).
 8. **Self-Documenting Code**: Use descriptive, intention-revealing names for functions, classes, and variables (e.g. `GetLowestPressureNeighbor()`) to make the code self-explanatory and reduce comment noise.
-9. **snake_case Naming**: Use `snake_case` for all function names and variable names (e.g. `deserialize_msg`, `sender_est_pressure`). Class names use `PascalCase` with a leading capital letter (e.g. `SPhybotMessage`, `CPhybotController`).
+9. **camelCase Naming**: Use `camelCase` for all function names and variable names (e.g. `deserializeMsg`, `senderEstPressure`). Class names use `PascalCase` with a leading capital letter (e.g. `SPhybotMessage`, `CPhybotController`).
 10. **No Hardcoded Magic Numbers**: Extract constants (such as sensor thresholds, physical offsets, and weights) into config parameter blocks or explicit constant variables instead of hardcoding them in inline calculations.
 
 ---

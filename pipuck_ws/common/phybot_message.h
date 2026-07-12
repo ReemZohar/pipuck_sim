@@ -16,30 +16,28 @@ namespace argos {
     * NOTE: This struct must be exactly 10 bytes.
     */
    struct SPhybotMessage {
-      _Float16 sender_est_pressure;      // Estimated pressure of the sender (p_j)
-      _Float16 edge_conductivity;        // Conductivity of the shared channel (D_ji)
-      _Float16 edge_flow;                // Flow along the channel (Q_ji)
-      uint32_t timestamp;                // Time step counter (t)
+      _Float16 senderEstPressure;      // Estimated pressure of the sender (p_j)
+      _Float16 edgeConductivity;        // Conductivity of the shared channel (D_ji)
+      _Float16 edgeFlow;                // Flow along the channel (Q_ji)
+      uint32_t timestamp;               // Time step counter (t)
    } __attribute__((packed));
 
    // CByteArray has no operator for _Float16, so we use raw byte copy to preserve the packed struct layout on the wire.
-   inline CByteArray seriallize_msg(const SPhybotMessage& msg) {
-      CByteArray c_bytes;
-      c_bytes.AddBuffer(
+   inline CByteArray seriallizeMsg(const SPhybotMessage& msg) {
+      CByteArray cBytes;
+      cBytes.AddBuffer(
          reinterpret_cast<const UInt8*>(&msg),
          sizeof(SPhybotMessage)
       );
-      return c_bytes;
+      return cBytes;
    }
 
-   inline SPhybotMessage deserialize_msg(const CByteArray& c_bytes) {
-      // Message was damaged scenario
-      if(c_bytes.Size() < sizeof(SPhybotMessage)) {
+   inline SPhybotMessage deserializeMsg(const CByteArray& cBytes) {
+      if(cBytes.Size() < sizeof(SPhybotMessage)) {
          THROW_ARGOSEXCEPTION("CByteArray too small for SPhybotMessage");
       }
       SPhybotMessage msg;
-      std::memcpy(&msg, c_bytes.ToCArray(), sizeof(SPhybotMessage));
-
+      std::memcpy(&msg, cBytes.ToCArray(), sizeof(SPhybotMessage));
       return msg;
    }
 

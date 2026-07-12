@@ -8,7 +8,10 @@
 #include <argos3/plugins/robots/generic/control_interface/ci_range_and_bearing_sensor.h>
 #include <argos3/plugins/robots/generic/control_interface/ci_range_and_bearing_actuator.h>
 #include <argos3/core/simulator/simulator.h>
-#include <common/phybot_message.h>
+
+#include "../common/phybot_message.h"
+#include "../common/robot_role.h"
+
 #include <deque>
 
 namespace argos {
@@ -35,13 +38,14 @@ namespace argos {
       // Parameters
       u_int32_t m_unH;
 
+      ERobotRole m_eRole;
       u_int32_t m_unTimestamp;
-      std::deque<SPhybotMessage> m_messages_in;
-      std::deque<SPhybotMessage> m_messages_out;
+      _Float16 esimatedPressure;
+      _Float16 foodReceived;
+      std::deque<SPhybotMessage> m_messagesIn;
+      std::deque<SPhybotMessage> m_messagesOut;
 
-      // Removes old messages from the incoming and outgoing message lists
-      void remove_old_messages();
-      // Removes old messages (sent/received before the minimum timestamp) from the given message list
-      void remove_old_messages(std::deque<SPhybotMessage>& messages, u_int32_t min_timestamp);
+      void removeOldMessages();
+      void removeOldMessages(std::deque<SPhybotMessage>& messages, u_int32_t minTimestamp);
    };
 }
