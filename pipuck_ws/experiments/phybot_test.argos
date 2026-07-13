@@ -66,12 +66,12 @@
     <box id="wall_west" size="0.1,4,0.5" movable="false"><body position="-2,0,0" orientation="0,0,0"/></box>
     
     <!-- robots -->
-    <pipuck id="pipuck0" led_medium="leds" rab_data_size="16" rab_range="1.5">
+    <pipuck id="pipuck0" led_medium="leds" rab_data_size="32" rab_range="1.5">
       <body position="0.0,0.0,0"/>
       <controller config="phybot_controller"/>
     </pipuck>
     
-    <pipuck id="pipuck1" led_medium="leds" rab_data_size="16" rab_range="1.5">
+    <pipuck id="pipuck1" led_medium="leds" rab_data_size="32" rab_range="1.5">
       <body position="1.0,0.0,0"/>
       <controller config="phybot_controller"/>
     </pipuck>
