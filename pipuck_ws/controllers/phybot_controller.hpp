@@ -12,8 +12,8 @@
 #include <argos3/core/simulator/space/space.h>
 #include <argos3/core/utility/datatypes/color.h>
 
-#include "../common/phybot_message.h"
-#include "../common/robot_role.h"
+#include "../common/phybot_message.hpp"
+#include "../common/robot_role.hpp"
 
 #include <deque>
 

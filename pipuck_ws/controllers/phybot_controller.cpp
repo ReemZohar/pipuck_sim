@@ -45,7 +45,7 @@ namespace argos {
         /* Serialize and broadcast an outgoing message */
         SPhybotMessage outMsg = {0, 0, 0, 0};
         m_pcRABAct->ClearData();
-        m_pcRABAct->SetData(seriallizeMsg(outMsg));
+        m_pcRABAct->SetData(serializeMsg(outMsg));
 
         /* Read and deserialize incoming RAB messages */
         const CCI_RangeAndBearingSensor::TReadings& packets = m_pcRABSens->GetReadings();
