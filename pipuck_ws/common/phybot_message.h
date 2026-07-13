@@ -7,39 +7,38 @@
 
 namespace argos {
 
-   /**
-    * @brief Message structure sent over the Range and Bearing (RAB) medium.
-    * 
-    * Conceptually represents the tuple <SenderPressure, EdgeConductivity, EdgeFlow, Timestamp>.
-    * The spatial vector field of the tuple is sensed physically on reception and is not serialized.
-    * 
-    * NOTE: This struct must be exactly 10 bytes.
-    */
-   struct SPhybotMessage {
-      _Float16 senderEstPressure;      // Estimated pressure of the sender (p_j)
-      _Float16 edgeConductivity;        // Conductivity of the shared channel (D_ji)
-      _Float16 edgeFlow;                // Flow along the channel (Q_ji)
-      uint32_t timestamp;               // Time step counter (t)
-   } __attribute__((packed));
+	/**
+	 * @brief Message structure sent over the Range and Bearing (RAB) medium.
+	 *
+	 * Conceptually represents the tuple <SenderPressure, EdgeConductivity, EdgeFlow, Timestamp>.
+	 * The spatial vector field of the tuple is sensed physically on reception and is not serialized.
+     * This structure represents the field values more accurately than SPhybotDenseMessage, but is larger in size.
+	 */
+	struct SPhybotMessage {
+		Real senderEstPressure;
+		Real edgeConductivity;
+		Real edgeFlow;
+		uint32_t timestamp;
+	};
 
-   // CByteArray has no operator for _Float16, so we use raw byte copy to preserve the packed struct layout on the wire.
-   inline CByteArray seriallizeMsg(const SPhybotMessage& msg) {
-      CByteArray cBytes;
-      cBytes.AddBuffer(
-         reinterpret_cast<const UInt8*>(&msg),
-         sizeof(SPhybotMessage)
-      );
-      return cBytes;
-   }
+	inline CByteArray seriallizeMsg(const SPhybotMessage& msg) {
+		CByteArray msgBytes;
+		msgBytes.AddBuffer(
+			reinterpret_cast<const UInt8*>(&msg),
+			sizeof(SPhybotMessage)
+		);
+		return msgBytes;
+	}
 
-   inline SPhybotMessage deserializeMsg(const CByteArray& cBytes) {
-      if(cBytes.Size() < sizeof(SPhybotMessage)) {
-         THROW_ARGOSEXCEPTION("CByteArray too small for SPhybotMessage");
-      }
-      SPhybotMessage msg;
-      std::memcpy(&msg, cBytes.ToCArray(), sizeof(SPhybotMessage));
-      return msg;
-   }
+	inline SPhybotMessage deserializeMsg(const CByteArray& msgBytes) {
+		if(msgBytes.Size() < sizeof(SPhybotMessage)) {
+			THROW_ARGOSEXCEPTION("CByteArray too small for SPhybotMessage");
+		}
+		SPhybotMessage msg;
+		std::memcpy(&msg, msgBytes.ToCArray(), sizeof(SPhybotMessage));
+        
+		return msg;
+	}
 
 }
 
