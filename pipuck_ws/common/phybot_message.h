@@ -21,7 +21,7 @@ namespace argos {
         uint32_t timestamp;
     };
 
-    inline CByteArray seriallizeMsg(const SPhybotMessage& msg) {
+    inline CByteArray serializeMsg(const SPhybotMessage& msg) {
         CByteArray msgBytes;
         msgBytes.AddBuffer(
             reinterpret_cast<const UInt8*>(&msg),

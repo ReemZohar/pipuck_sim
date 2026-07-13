@@ -24,7 +24,7 @@ namespace argos {
     } __attribute__((packed));
 
     // CByteArray has no operator for _Float16, so we use raw byte copy.
-    inline CByteArray seriallizeMsg(const SPhybotDenseMessage& msg) {
+    inline CByteArray serializeMsg(const SPhybotDenseMessage& msg) {
         CByteArray msgBytes;
         msgBytes.AddBuffer(
             reinterpret_cast<const UInt8*>(&msg),
