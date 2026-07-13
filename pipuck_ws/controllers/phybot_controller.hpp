@@ -19,61 +19,61 @@
 
 namespace argos {
 
-   class CPhybotController : public CCI_Controller {
+    class CPhybotController : public CCI_Controller {
 
-   public:
-      CPhybotController() {}
-      virtual ~CPhybotController() {}
+    public:
+        CPhybotController() {}
+        virtual ~CPhybotController() {}
 
-      void Init(TConfigurationNode& t_tree) override;
-      void ControlStep() override;
-      void Reset() override;
+        void Init(TConfigurationNode& t_tree) override;
+        void ControlStep() override;
+        void Reset() override;
 
-   private:
-      CCI_PiPuckDifferentialDriveActuator* m_pcWheels = nullptr;
-      CCI_PiPuckColorLEDsActuator* m_pcColoredLEDs = nullptr;
-      CCI_ColoredBlobOmnidirectionalCameraSensor* m_pcCamera = nullptr;
-      CCI_PiPuckRangefindersSensor* m_pcRangefinders = nullptr;
-      CCI_PiPuckSystemSensor* m_pcSystem = nullptr;
-      CCI_RangeAndBearingSensor* m_pcRABSens = nullptr;
-      CCI_RangeAndBearingActuator* m_pcRABAct = nullptr;
+    private:
+        CCI_PiPuckDifferentialDriveActuator* m_pcWheels = nullptr;
+        CCI_PiPuckColorLEDsActuator* m_pcColoredLEDs = nullptr;
+        CCI_ColoredBlobOmnidirectionalCameraSensor* m_pcCamera = nullptr;
+        CCI_PiPuckRangefindersSensor* m_pcRangefinders = nullptr;
+        CCI_PiPuckSystemSensor* m_pcSystem = nullptr;
+        CCI_RangeAndBearingSensor* m_pcRABSens = nullptr;
+        CCI_RangeAndBearingActuator* m_pcRABAct = nullptr;
 
-      // Parameters
-      // Pi-Puck has 8 rangefinders
-      static constexpr u_int8_t NUM_SECTORS = 8;
+        // Parameters
+        // Pi-Puck has 8 rangefinders
+        static constexpr u_int8_t NUM_SECTORS = 8;
 
-      // Di-PL parameters
-      Real m_fAlpha;
-      Real m_fKp;
-      Real m_fGammaQ;
-      Real m_fDeltaT;
-      Real m_fI0;
-      Real m_fPMax;
+        // Di-PL parameters
+        Real m_fAlpha;
+        Real m_fKp;
+        Real m_fGammaQ;
+        Real m_fDeltaT;
+        Real m_fI0;
+        Real m_fPMax;
 
-      // Motion parameters
-      Real m_fWp;
-      Real m_fBetaD;
-      Real m_fAlphaD;
-      Real m_fEpsilonD;
-      Real m_fIe;
-      Real m_fGamma;
-      Real m_fK;
-      Real m_fDs;
-      u_int32_t m_unH;
+        // Motion parameters
+        Real m_fWp;
+        Real m_fBetaD;
+        Real m_fAlphaD;
+        Real m_fEpsilonD;
+        Real m_fIe;
+        Real m_fGamma;
+        Real m_fK;
+        Real m_fDs;
+        u_int32_t m_unH;
 
-      // State variables
-      ERobotRole m_eRole;
-      u_int32_t m_unTimestamp;
-      Real m_fEsimatedPressure;
-      Real m_fFoodReceived;
-      Real m_fSectorConductivities[NUM_SECTORS];
-      std::deque<SPhybotMessage> m_messagesIn;
-      std::deque<SPhybotMessage> m_messagesOut;
+        // State variables
+        ERobotRole m_eRole;
+        u_int32_t m_unTimestamp;
+        Real m_fEsimatedPressure;
+        Real m_fFoodReceived;
+        Real m_fSectorConductivities[NUM_SECTORS];
+        std::deque<SPhybotMessage> m_messagesIn;
+        std::deque<SPhybotMessage> m_messagesOut;
 
-      // Removes old messages from both m_messagesIn and m_messagesOut
-      void removeOldMessages();
-      // Removes old messages (older then the minimum timestamp) from the given message list.
-      void removeOldMessages(std::deque<SPhybotMessage>& messages, u_int32_t minTimestamp);
-      void updateLEDs();
-   };
+        // Removes old messages from both m_messagesIn and m_messagesOut
+        void removeOldMessages();
+        // Removes old messages (older then the minimum timestamp) from the given message list.
+        void removeOldMessages(std::deque<SPhybotMessage>& messages, u_int32_t minTimestamp);
+        void updateLEDs();
+    };
 }

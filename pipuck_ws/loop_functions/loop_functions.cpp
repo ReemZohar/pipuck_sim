@@ -4,18 +4,16 @@
 
 namespace argos {
 
-   /****************************************/
-   /****************************************/
+    /****************************************/
+    /****************************************/
 
-   bool CTestLoopFunctions::IsExperimentFinished() {
-      return false;
-   }
+    bool CTestLoopFunctions::IsExperimentFinished() {
+        return false;
+    }
 
-   
+    /****************************************/
+    /****************************************/
 
-   /****************************************/
-   /****************************************/
-
-   REGISTER_LOOP_FUNCTIONS(CTestLoopFunctions, "test_loop_functions");
+    REGISTER_LOOP_FUNCTIONS(CTestLoopFunctions, "test_loop_functions");
 
 }

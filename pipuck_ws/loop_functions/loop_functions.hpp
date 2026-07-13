@@ -2,24 +2,21 @@
 #define TEST_LOOP_FUNCTIONS_H
 
 namespace argos {
-   class CEmbodiedEntity;
+    class CEmbodiedEntity;
 }
 
 #include <argos3/core/simulator/loop_functions.h>
 
 namespace argos {
 
-   class CTestLoopFunctions : public CLoopFunctions {
+    class CTestLoopFunctions : public CLoopFunctions {
 
-   public:
+    public:
+        CTestLoopFunctions() {}
+        virtual ~CTestLoopFunctions() {}
 
-      CTestLoopFunctions() {}
-
-      virtual ~CTestLoopFunctions() {}
-
-      virtual bool IsExperimentFinished() override;
-   };
+        virtual bool IsExperimentFinished() override;
+    };
 }
 
 #endif
-
