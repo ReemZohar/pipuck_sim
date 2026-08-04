@@ -15,6 +15,7 @@
 #include "../algorithms/message/phybot_message.hpp"
 #include "../algorithms/robot_role.hpp"
 #include "../algorithms/message/phybot_message_list.hpp"
+#include "../algorithms/di_pl.hpp"
 
 #include <deque>
 #include <memory>

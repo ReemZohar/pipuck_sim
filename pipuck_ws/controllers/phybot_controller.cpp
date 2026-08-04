@@ -14,6 +14,8 @@ namespace argos {
 
         GetNodeAttribute(GetNode(t_tree, "alpha"), "value", m_fAlpha);
         GetNodeAttribute(GetNode(t_tree, "kp"), "value", m_fKp);
+        CDiPL::setParameters(m_fKp, m_fAlpha);
+
         GetNodeAttribute(GetNode(t_tree, "gammaQ"), "value", m_fGammaQ);
         GetNodeAttribute(GetNode(t_tree, "deltaT"), "value", m_fDeltaT);
         GetNodeAttribute(GetNode(t_tree, "i0"), "value", m_fI0);
