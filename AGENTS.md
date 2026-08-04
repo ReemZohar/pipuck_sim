@@ -18,6 +18,7 @@ All code implementations in the **[pipuck_ws](pipuck_ws)** workspace must adhere
 8. **Self-Documenting Code**: Use descriptive, intention-revealing names for functions, classes, and variables (e.g. `GetLowestPressureNeighbor()`) to make the code self-explanatory and reduce comment noise.
 9. **camelCase Naming**: Use `camelCase` for all function names and variable names (e.g. `deserializeMsg`, `senderEstPressure`). Class names use `PascalCase` with a leading capital letter (e.g. `SPhybotMessage`, `CPhybotController`).
 10. **No Hardcoded Magic Numbers**: Extract constants (such as sensor thresholds, physical offsets, and weights) into config parameter blocks or explicit constant variables instead of hardcoding them in inline calculations.
+11. **4-Space Indentation**: Use 4 spaces for indentation in all C++ source files (`.hpp`, `.cpp`, `.h`). Do not use tabs.
 
 ---
 
