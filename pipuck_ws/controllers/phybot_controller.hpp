@@ -14,6 +14,7 @@
 
 #include "../algorithms/message/phybot_message.hpp"
 #include "../algorithms/robot_role.hpp"
+#include "../algorithms/message/phybot_message_list.hpp"
 
 #include <deque>
 #include <memory>
@@ -67,12 +68,9 @@ namespace argos {
         Real m_fEsimatedPressure;
         Real m_fFoodReceived;
         Real m_fSectorConductivities[NUM_SECTORS];
+        CPhybotMessageList m_messageList;
         std::unique_ptr<CPhybotMessage> m_outMsg;
-        std::deque<std::unique_ptr<CPhybotMessage>> m_messagesIn;
-        std::deque<std::unique_ptr<CPhybotMessage>> m_messagesOut;
-
-        void removeOldMessages();
-        void removeOldMessages(std::deque<std::unique_ptr<CPhybotMessage>>& messages, u_int32_t minTimestamp);
+        
         void updateLEDs();
     };
 }

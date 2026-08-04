@@ -32,6 +32,9 @@ namespace argos {
         m_outMsg = std::make_unique<CPhybotHeavyMessage>();
 
         m_unTimestamp = 0;
+        m_fEsimatedPressure = 0;
+        m_fFoodReceived = 0;
+        m_eRole = ERobotRole::NORMAL;
         for(u_int8_t i = 0; i < NUM_SECTORS; i++) {
             m_fSectorConductivities[i] = 0;
         }
@@ -50,39 +53,28 @@ namespace argos {
 
         const CCI_RangeAndBearingSensor::TReadings& packets = m_pcRABSens->GetReadings();
         for(size_t i = 0; i < packets.size(); ++i) {
-            auto inMsg = std::make_unique<CPhybotHeavyMessage>();
+            std::unique_ptr<CPhybotMessage> inMsg = std::make_unique<CPhybotHeavyMessage>();
             CByteArray data = packets[i].Data;
             inMsg->deserialize(data);
             RLOG << "Received: pressure=" << static_cast<float>(inMsg->senderEstPressure)
                  << " conductivity=" << static_cast<float>(inMsg->edgeConductivity)
                  << " flow=" << static_cast<float>(inMsg->edgeFlow)
                  << " timestamp=" << inMsg->timestamp << std::endl;
-            m_messagesIn.push_back(std::move(inMsg));
+            m_messageList.addMessage(std::move(inMsg), true);
         }
+        m_messageList.removeOldMessages(m_unTimestamp, m_unH);
 
         m_unTimestamp++;
     }
 
     void CPhybotController::Reset() {
         m_unTimestamp = 0;
+        m_fEsimatedPressure = 0;
+        m_fFoodReceived = 0;
+        m_eRole = ERobotRole::NORMAL;
+        m_messageList.clear();
         for(u_int8_t i = 0; i < NUM_SECTORS; i++) {
             m_fSectorConductivities[i] = 0;
-        }
-        m_messagesIn.clear();
-        m_messagesOut.clear();
-    }
-
-    void CPhybotController::removeOldMessages() {
-        if(m_unTimestamp <= m_unH) return;
-
-        u_int32_t minTimestamp = m_unTimestamp - m_unH;
-        removeOldMessages(m_messagesIn, minTimestamp);
-        removeOldMessages(m_messagesOut, minTimestamp);
-    }
-
-    void CPhybotController::removeOldMessages(std::deque<std::unique_ptr<CPhybotMessage>>& messages, u_int32_t minTimestamp) {
-        while(!messages.empty() && (minTimestamp > messages.front()->timestamp)) {
-            messages.pop_front();
         }
     }
 

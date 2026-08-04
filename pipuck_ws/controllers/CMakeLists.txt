@@ -1,6 +1,7 @@
 set(SRC
   phybot_controller.cpp
   ../algorithms/message/phybot_heavy_message.cpp
+  ../algorithms/message/phybot_message_list.cpp
 )
 
 add_library(pipuck_phybot_controller MODULE ${SRC})
