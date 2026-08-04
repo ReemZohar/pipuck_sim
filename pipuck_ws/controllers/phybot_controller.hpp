@@ -12,10 +12,11 @@
 #include <argos3/core/simulator/space/space.h>
 #include <argos3/core/utility/datatypes/color.h>
 
-#include "../common/phybot_message.hpp"
-#include "../common/robot_role.hpp"
+#include "../algorithms/message/phybot_message.hpp"
+#include "../algorithms/robot_role.hpp"
 
 #include <deque>
+#include <memory>
 
 namespace argos {
 
@@ -39,7 +40,6 @@ namespace argos {
         CCI_RangeAndBearingActuator* m_pcRABAct = nullptr;
 
         // Parameters
-        // Pi-Puck has 8 rangefinders
         static constexpr u_int8_t NUM_SECTORS = 8;
 
         // Di-PL parameters
@@ -67,13 +67,12 @@ namespace argos {
         Real m_fEsimatedPressure;
         Real m_fFoodReceived;
         Real m_fSectorConductivities[NUM_SECTORS];
-        std::deque<SPhybotMessage> m_messagesIn;
-        std::deque<SPhybotMessage> m_messagesOut;
+        std::unique_ptr<CPhybotMessage> m_outMsg;
+        std::deque<std::unique_ptr<CPhybotMessage>> m_messagesIn;
+        std::deque<std::unique_ptr<CPhybotMessage>> m_messagesOut;
 
-        // Removes old messages from both m_messagesIn and m_messagesOut
         void removeOldMessages();
-        // Removes old messages (older then the minimum timestamp) from the given message list.
-        void removeOldMessages(std::deque<SPhybotMessage>& messages, u_int32_t minTimestamp);
+        void removeOldMessages(std::deque<std::unique_ptr<CPhybotMessage>>& messages, u_int32_t minTimestamp);
         void updateLEDs();
     };
 }

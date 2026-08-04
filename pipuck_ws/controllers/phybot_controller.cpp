@@ -1,9 +1,9 @@
 #include "phybot_controller.hpp"
+#include "../algorithms/message/phybot_heavy_message.hpp"
 
 namespace argos {
 
     void CPhybotController::Init(TConfigurationNode& t_tree) {
-        /* Get the actuators and sensors */
         m_pcWheels = GetActuator<CCI_PiPuckDifferentialDriveActuator>("pipuck_differential_drive");
         m_pcColoredLEDs = GetActuator<CCI_PiPuckColorLEDsActuator>("pipuck_leds");
         m_pcSystem = GetSensor<CCI_PiPuckSystemSensor>("pipuck_system");
@@ -12,8 +12,6 @@ namespace argos {
         m_pcRABSens = GetSensor<CCI_RangeAndBearingSensor>("range_and_bearing");
         m_pcRABAct = GetActuator<CCI_RangeAndBearingActuator>("range_and_bearing");
 
-        // t_tree IS the <params> node
-        // Di-PL parameters
         GetNodeAttribute(GetNode(t_tree, "alpha"), "value", m_fAlpha);
         GetNodeAttribute(GetNode(t_tree, "kp"), "value", m_fKp);
         GetNodeAttribute(GetNode(t_tree, "gammaQ"), "value", m_fGammaQ);
@@ -21,7 +19,6 @@ namespace argos {
         GetNodeAttribute(GetNode(t_tree, "i0"), "value", m_fI0);
         GetNodeAttribute(GetNode(t_tree, "pMax"), "value", m_fPMax);
 
-        // Motion parameters
         GetNodeAttribute(GetNode(t_tree, "wp"), "value", m_fWp);
         GetNodeAttribute(GetNode(t_tree, "betaD"), "value", m_fBetaD);
         GetNodeAttribute(GetNode(t_tree, "alphaD"), "value", m_fAlphaD);
@@ -32,7 +29,8 @@ namespace argos {
         GetNodeAttribute(GetNode(t_tree, "ds"), "value", m_fDs);
         GetNodeAttribute(GetNode(t_tree, "H"), "value", m_unH);
 
-        // Initialize state variables
+        m_outMsg = std::make_unique<CPhybotHeavyMessage>();
+
         m_unTimestamp = 0;
         for(u_int8_t i = 0; i < NUM_SECTORS; i++) {
             m_fSectorConductivities[i] = 0;
@@ -42,21 +40,24 @@ namespace argos {
     void CPhybotController::ControlStep() {
         m_pcWheels->SetLinearVelocity(5.0f, 5.0f);
 
-        /* Serialize and broadcast an outgoing message */
-        SPhybotMessage outMsg = {0, 0, 0, 0};
+        m_outMsg->relativeLocation = 0;
+        m_outMsg->senderEstPressure = 0;
+        m_outMsg->edgeConductivity = 0;
+        m_outMsg->edgeFlow = 0;
+        m_outMsg->timestamp = 0;
         m_pcRABAct->ClearData();
-        m_pcRABAct->SetData(serializeMsg(outMsg));
+        m_pcRABAct->SetData(m_outMsg->serialize());
 
-        /* Read and deserialize incoming RAB messages */
         const CCI_RangeAndBearingSensor::TReadings& packets = m_pcRABSens->GetReadings();
         for(size_t i = 0; i < packets.size(); ++i) {
-            if(packets[i].Data.Size() >= sizeof(SPhybotMessage)) {
-                SPhybotMessage inMsg = deserializeMsg(packets[i].Data);
-                RLOG << "Received: pressure=" << static_cast<float>(inMsg.senderEstPressure)
-                     << " conductivity=" << static_cast<float>(inMsg.edgeConductivity)
-                     << " flow=" << static_cast<float>(inMsg.edgeFlow)
-                     << " timestamp=" << inMsg.timestamp << std::endl;
-            }
+            auto inMsg = std::make_unique<CPhybotHeavyMessage>();
+            CByteArray data = packets[i].Data;
+            inMsg->deserialize(data);
+            RLOG << "Received: pressure=" << static_cast<float>(inMsg->senderEstPressure)
+                 << " conductivity=" << static_cast<float>(inMsg->edgeConductivity)
+                 << " flow=" << static_cast<float>(inMsg->edgeFlow)
+                 << " timestamp=" << inMsg->timestamp << std::endl;
+            m_messagesIn.push_back(std::move(inMsg));
         }
 
         m_unTimestamp++;
@@ -79,8 +80,8 @@ namespace argos {
         removeOldMessages(m_messagesOut, minTimestamp);
     }
 
-    void CPhybotController::removeOldMessages(std::deque<SPhybotMessage>& messages, u_int32_t minTimestamp) {
-        while(!messages.empty() && (minTimestamp > messages.front().timestamp)) {
+    void CPhybotController::removeOldMessages(std::deque<std::unique_ptr<CPhybotMessage>>& messages, u_int32_t minTimestamp) {
+        while(!messages.empty() && (minTimestamp > messages.front()->timestamp)) {
             messages.pop_front();
         }
     }
