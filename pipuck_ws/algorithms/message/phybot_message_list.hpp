@@ -17,8 +17,8 @@ namespace argos {
     public:
         void addMessage(std::unique_ptr<CPhybotMessage> msg, bool isIncoming);
         void clear();
-        size_t getIncomingMsgSize() const;
-        size_t getOutgoingMsgSize() const;
+        const std::deque<std::unique_ptr<CPhybotMessage>>& getIncomingMessages() const;
+        const std::deque<std::unique_ptr<CPhybotMessage>>& getOutgoingMessages() const;
         void removeOldMessages(u_int32_t timestamp, u_int32_t H);
         
     private:

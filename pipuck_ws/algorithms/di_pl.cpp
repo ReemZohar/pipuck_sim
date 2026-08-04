@@ -8,4 +8,37 @@ namespace argos {
         m_fKp = Kp;
         m_fAlpha = alpha;
     }
+
+    Real CDiPL::updatePressure(const std::deque<std::unique_ptr<CPhybotMessage>>& msgList, Real oldPressure, Real xt) {
+        return (1 - m_fAlpha) * oldPressure + m_fAlpha * g(xt, oldPressure);
+    }
+
+    Real CDiPL::calcIncomingPressure(const std::deque<std::unique_ptr<CPhybotMessage>>& msgList) {
+        Real pressure = 0;
+
+        for (const auto& msg : msgList) {
+            pressure += msg->m_fSenderEstPressure;
+            // Epsilon is added to avoid division by zero in case the edge conductivity is zero.
+            pressure -= (msg->m_fRelativeLocation * msg->m_fEdgeFlow) / (msg->m_fEdgeConductivity + EPSILON);
+        }
+
+        // We return the calculated pressure while avoiding division by zero in case the message list is empty.
+        return msgList.empty() ? 0 : pressure / msgList.size();
+    }
+
+    Real CDiPL::calcOutgoingPressure(const std::deque<std::unique_ptr<CPhybotMessage>>& msgList, Real totalPressures) {
+        Real pressure = totalPressures;
+
+        for (const auto& msg : msgList) {
+            // Epsilon is added to avoid division by zero in case the edge conductivity is zero.
+            pressure += (msg->m_fRelativeLocation * msg->m_fEdgeFlow) / (msg->m_fEdgeConductivity + EPSILON);
+        }
+
+        // We return the calculated pressure while avoiding division by zero in case the message list is empty.
+        return msgList.empty() ? 0 : pressure / msgList.size();
+    }
+
+    Real CDiPL::g(Real newPressure, Real oldPressure) {
+        return newPressure == 0 && ((m_fKp > 0) && (m_fKp < 1)) ? oldPressure * m_fKp : newPressure;
+    }
 }

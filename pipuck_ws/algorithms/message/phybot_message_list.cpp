@@ -15,12 +15,12 @@ namespace argos {
         m_messagesOut.clear();
     }
 
-    size_t CPhybotMessageList::getIncomingMsgSize() const {
-        return m_messagesIn.size();
+    const std::deque<std::unique_ptr<CPhybotMessage>>& CPhybotMessageList::getIncomingMessages() const {
+        return m_messagesIn;
     }
 
-    size_t CPhybotMessageList::getOutgoingMsgSize() const {
-        return m_messagesOut.size();
+    const std::deque<std::unique_ptr<CPhybotMessage>>& CPhybotMessageList::getOutgoingMessages() const {
+        return m_messagesOut;
     }
 
     void CPhybotMessageList::removeOldMessages(u_int32_t timestamp, u_int32_t H) {
