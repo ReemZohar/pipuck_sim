@@ -13,11 +13,11 @@ namespace argos {
      */
     class CPhybotMessage {
     public:
-        Real relativeLocation;
-        Real senderEstPressure;
-        Real edgeConductivity;
-        Real edgeFlow;
-        uint32_t timestamp;
+        Real m_fRelativeLocation;
+        Real m_fSenderEstPressure;
+        Real m_fEdgeConductivity;
+        Real m_fEdgeFlow;
+        uint32_t m_unTimestamp;
         
         virtual ~CPhybotMessage() = default;
         virtual CByteArray serialize() const = 0;

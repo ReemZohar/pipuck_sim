@@ -35,7 +35,7 @@ namespace argos {
 
     void CPhybotMessageList::removeOldMessages(std::deque<std::unique_ptr<CPhybotMessage>>& messages, u_int32_t minTimestamp) {
         // Removes messages older than minTimestamp
-        while (!messages.empty() && (messages.front()->timestamp < minTimestamp)) {
+        while (!messages.empty() && (messages.front()->m_unTimestamp < minTimestamp)) {
             messages.pop_front();
         }
     }

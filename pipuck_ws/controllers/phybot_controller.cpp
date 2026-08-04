@@ -45,11 +45,11 @@ namespace argos {
     void CPhybotController::ControlStep() {
         m_pcWheels->SetLinearVelocity(5.0f, 5.0f);
 
-        m_outMsg->relativeLocation = 0;
-        m_outMsg->senderEstPressure = 0;
-        m_outMsg->edgeConductivity = 0;
-        m_outMsg->edgeFlow = 0;
-        m_outMsg->timestamp = 0;
+        m_outMsg->m_fRelativeLocation = 0;
+        m_outMsg->m_fSenderEstPressure = 0;
+        m_outMsg->m_fEdgeConductivity = 0;
+        m_outMsg->m_fEdgeFlow = 0;
+        m_outMsg->m_unTimestamp = 0;
         m_pcRABAct->ClearData();
         m_pcRABAct->SetData(m_outMsg->serialize());
 
@@ -58,10 +58,10 @@ namespace argos {
             std::unique_ptr<CPhybotMessage> inMsg = std::make_unique<CPhybotHeavyMessage>();
             CByteArray data = packets[i].Data;
             inMsg->deserialize(data);
-            RLOG << "Received: pressure=" << static_cast<float>(inMsg->senderEstPressure)
-                 << " conductivity=" << static_cast<float>(inMsg->edgeConductivity)
-                 << " flow=" << static_cast<float>(inMsg->edgeFlow)
-                 << " timestamp=" << inMsg->timestamp << std::endl;
+            RLOG << "Received: pressure=" << static_cast<float>(inMsg->m_fSenderEstPressure)
+                 << " conductivity=" << static_cast<float>(inMsg->m_fEdgeConductivity)
+                 << " flow=" << static_cast<float>(inMsg->m_fEdgeFlow)
+                 << " timestamp=" << inMsg->m_unTimestamp << std::endl;
             m_messageList.addMessage(std::move(inMsg), true);
         }
         m_messageList.removeOldMessages(m_unTimestamp, m_unH);
