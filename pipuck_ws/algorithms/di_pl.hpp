@@ -14,7 +14,7 @@ namespace argos {
     class CDiPL {
         public:
         // Sets the algorithm hyperparameters
-        static void setParameters(Real Kp, Real alpha);
+        static void setParameters(Real Kp, Real alpha, Real deltaT);
         static Real updatePressure(const std::deque<std::unique_ptr<CPhybotMessage>>& msgList, Real oldPressure, Real xt);
         static Real calcTotalIncomingFlux(const std::deque<std::unique_ptr<CPhybotMessage>>& incMsgList, Real oldFlux);
         static Real calcOutgoingEstFlux(const std::unique_ptr<CPhybotMessage>& msg, Real pressure);
@@ -28,7 +28,8 @@ namespace argos {
 
         static Real m_fKp;
         static Real m_fAlpha;
-
+        static Real m_fDeltaT;
+        
         // Safe decay function
         static Real g(Real newPressure, Real oldPressure);
     };

@@ -73,5 +73,7 @@ namespace argos {
         std::unique_ptr<CPhybotMessage> m_outMsg;
         
         void updateLEDs();
+        // Extracts all hyperparameters from the XML configuration file and sets them to the corresponding member variables.
+        void extractParameters(TConfigurationNode& t_tree);
     };
 }

@@ -3,10 +3,15 @@
 namespace argos {
     Real CDiPL::m_fKp = 0;
     Real CDiPL::m_fAlpha = 0;
+    Real CDiPL::m_fDeltaT = 0;
 
-    void CDiPL::setParameters(Real Kp, Real alpha) {
+    void CDiPL::setParameters(Real Kp, Real alpha, Real deltaT) {
+        // The parameter K_p
         m_fKp = Kp;
+        // The parameter alpha
         m_fAlpha = alpha;
+        // The parameter deltaT
+        m_fDeltaT = deltaT;
     }
 
     Real CDiPL::updatePressure(const std::deque<std::unique_ptr<CPhybotMessage>>& msgList, Real oldPressure, Real xt) {

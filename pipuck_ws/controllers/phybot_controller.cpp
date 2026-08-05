@@ -12,24 +12,11 @@ namespace argos {
         m_pcRABSens = GetSensor<CCI_RangeAndBearingSensor>("range_and_bearing");
         m_pcRABAct = GetActuator<CCI_RangeAndBearingActuator>("range_and_bearing");
 
-        GetNodeAttribute(GetNode(t_tree, "alpha"), "value", m_fAlpha);
-        GetNodeAttribute(GetNode(t_tree, "kp"), "value", m_fKp);
-        CDiPL::setParameters(m_fKp, m_fAlpha);
+        // Extracts all hyperparameters from the XML configuration file and sets them to the corresponding member variables.
+        extractParameters(t_tree);
 
-        GetNodeAttribute(GetNode(t_tree, "gammaQ"), "value", m_fGammaQ);
-        GetNodeAttribute(GetNode(t_tree, "deltaT"), "value", m_fDeltaT);
-        GetNodeAttribute(GetNode(t_tree, "i0"), "value", m_fI0);
-        GetNodeAttribute(GetNode(t_tree, "pMax"), "value", m_fPMax);
-
-        GetNodeAttribute(GetNode(t_tree, "wp"), "value", m_fWp);
-        GetNodeAttribute(GetNode(t_tree, "betaD"), "value", m_fBetaD);
-        GetNodeAttribute(GetNode(t_tree, "alphaD"), "value", m_fAlphaD);
-        GetNodeAttribute(GetNode(t_tree, "epsilonD"), "value", m_fEpsilonD);
-        GetNodeAttribute(GetNode(t_tree, "ie"), "value", m_fIe);
-        GetNodeAttribute(GetNode(t_tree, "gamma"), "value", m_fGamma);
-        GetNodeAttribute(GetNode(t_tree, "k"), "value", m_fK);
-        GetNodeAttribute(GetNode(t_tree, "ds"), "value", m_fDs);
-        GetNodeAttribute(GetNode(t_tree, "H"), "value", m_unH);
+        // Sets the hyperparameters for the Di-PL algorithm
+        CDiPL::setParameters(m_fKp, m_fAlpha, m_fDeltaT);
 
         m_outMsg = std::make_unique<CPhybotHeavyMessage>();
 
@@ -84,6 +71,27 @@ namespace argos {
         if(m_eRole == ERobotRole::NORMAL) m_pcColoredLEDs->SetRingLEDs(CColor::WHITE);
         else if(m_eRole == ERobotRole::SOURCE) m_pcColoredLEDs->SetRingLEDs(CColor::GREEN);
         else m_pcColoredLEDs->SetRingLEDs(CColor::BLUE);
+    }
+
+    void CPhybotController::extractParameters(TConfigurationNode& t_tree) {
+        // Di-PL hyperparameters
+        GetNodeAttribute(GetNode(t_tree, "alpha"), "value", m_fAlpha);
+        GetNodeAttribute(GetNode(t_tree, "kp"), "value", m_fKp);
+        GetNodeAttribute(GetNode(t_tree, "deltaT"), "value", m_fDeltaT);
+
+        GetNodeAttribute(GetNode(t_tree, "gammaQ"), "value", m_fGammaQ);
+        GetNodeAttribute(GetNode(t_tree, "i0"), "value", m_fI0);
+        GetNodeAttribute(GetNode(t_tree, "pMax"), "value", m_fPMax);
+
+        GetNodeAttribute(GetNode(t_tree, "wp"), "value", m_fWp);
+        GetNodeAttribute(GetNode(t_tree, "betaD"), "value", m_fBetaD);
+        GetNodeAttribute(GetNode(t_tree, "alphaD"), "value", m_fAlphaD);
+        GetNodeAttribute(GetNode(t_tree, "epsilonD"), "value", m_fEpsilonD);
+        GetNodeAttribute(GetNode(t_tree, "ie"), "value", m_fIe);
+        GetNodeAttribute(GetNode(t_tree, "gamma"), "value", m_fGamma);
+        GetNodeAttribute(GetNode(t_tree, "k"), "value", m_fK);
+        GetNodeAttribute(GetNode(t_tree, "ds"), "value", m_fDs);
+        GetNodeAttribute(GetNode(t_tree, "H"), "value", m_unH);
     }
 
     REGISTER_CONTROLLER(CPhybotController, "phybot_controller");
