@@ -31,6 +31,17 @@ namespace argos {
         return incMsgList.empty() ? 0 : pressure / incMsgList.size();
     }
 
+    Real CDiPL::calcTotalIncomingFlux(const std::deque<std::unique_ptr<CPhybotMessage>>& incMsgList, Real oldFlux) {
+        Real totalFlux = oldFlux;
+
+        // Calculates total incoming flux
+        for (const auto& msg : incMsgList) {
+            totalFlux += msg->m_fEdgeFlow;
+        }
+
+        return totalFlux;
+    }
+
     Real CDiPL::calcOutgoingPressure(const std::deque<std::unique_ptr<CPhybotMessage>>& outMsgList, Real totalPressures) {
         Real pressure = totalPressures;
 

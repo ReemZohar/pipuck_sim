@@ -4,7 +4,7 @@
 #include <argos3/core/utility/datatypes/datatypes.h>
 #include <deque>
 
-#include "message/phybot_message_list.hpp"
+#include "../ds/message/phybot_message_list.hpp"
 
 namespace argos {
     // TODO: update the documentation with a description of the di-pl algorithm

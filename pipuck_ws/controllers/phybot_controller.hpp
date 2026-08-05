@@ -12,13 +12,19 @@
 #include <argos3/core/simulator/space/space.h>
 #include <argos3/core/utility/datatypes/color.h>
 
-#include "../algorithms/message/phybot_message.hpp"
+#include "../ds/message/phybot_message.hpp"
+#include "../ds/message/phybot_heavy_message.hpp"
+#include "../ds/neighbor_reading.hpp"
 #include "../algorithms/robot_role.hpp"
-#include "../algorithms/message/phybot_message_list.hpp"
+#include "../ds/message/phybot_message_list.hpp"
 #include "../algorithms/di_pl.hpp"
 
+#include <array>
 #include <deque>
 #include <memory>
+#include <limits>
+#include <vector>
+
 
 namespace argos {
 
@@ -66,14 +72,17 @@ namespace argos {
         // State variables
         ERobotRole m_eRole;
         u_int32_t m_unTimestamp;
-        Real m_fEsimatedPressure;
+        Real m_fEstimatedPressure;
         Real m_fFoodReceived;
         Real m_fSectorConductivities[NUM_SECTORS];
         CPhybotMessageList m_messageList;
         std::unique_ptr<CPhybotMessage> m_outMsg;
-        
+
         void updateLEDs();
-        // Extracts all hyperparameters from the XML configuration file and sets them to the corresponding member variables.
         void extractParameters(TConfigurationNode& t_tree);
+        // Task 2.2.2: Selects the lowest-pressure neighbor for each sector.
+        // Returns one receiver per sector, indexed by sector (nullptr when no neighbor was seen in that sector).
+        std::array<const CPhybotMessage*, NUM_SECTORS> selectSectorReceivers(const std::vector<SNeighborReading>& neighbors);
     };
 }
+

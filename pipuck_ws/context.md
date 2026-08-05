@@ -29,7 +29,31 @@ QT_QPA_PLATFORM=offscreen argos3 -c experiments/phybot_test.argos
 
 ---
 
+## Scope & Editing Directives
+
+- **Targeted Modifications Only**: Never perform wholesale refactoring or modify files/methods outside the explicit user request.
+- **Preserve Comments & Logic**: Keep all existing user comments, method signatures, static modifiers, and existing logic intact.
+- **Selective Commenting**: Add meaningful comments for newly introduced logic without adding redundant comments.
+
+---
+
+## Naming Conventions
+
+Matches the ARGoS plugin style (see AGENTS.md rule 9):
+
+- **Functions / non-member variables**: `camelCase` (e.g. `extractParameters`, `getLowestPressureNeighborPerSector`).
+- **Classes**: `PascalCase` with a leading `C` (controllers, entities) or `S` (structs): `CPhybotController`, `CPhybotMessage`, `SNeighborReading`.
+- **Member variables**: `m_` prefix + type tag:
+  - `f` → `Real` (`m_fAlpha`, `m_fEstimatedPressure`)
+  - `pc` → pointer to control-interface class (`m_pcWheels`, `m_pcRABSens`)
+  - `un` → unsigned (`m_unTimestamp`, `m_unH`)
+  - `e` → enum (`m_eRole`)
+  - `s` → struct (`m_messageList`)
+
+---
+
 ## ARGoS XML Conventions (Critical)
+
 
 ### Controller `<params>` node is passed directly to `Init()`
 
@@ -62,12 +86,12 @@ The corresponding XML structure:
 </params>
 ```
 
-### `rab_data_size` must match `sizeof(SPhybotMessage)`
+### `rab_data_size` must match serialized message size
 
-`SPhybotMessage` is 10 bytes packed (`3x _Float16` = 6 bytes + `uint32_t` = 4 bytes). The XML must have `rab_data_size="10"` on each `<pipuck>` entity:
+`CPhybotHeavyMessage` serializes 4 `Real` + 1 `uint32_t` via `CByteArray` operators. ARGoS encodes each `double` as an `SInt64` mantissa + `SInt32` exponent (**12 bytes**, see `byte_array.cpp::operator<<(double)`), so the wire size is `4 * 12 + 4 = 52` bytes. The XML must have `rab_data_size="52"` on each `<pipuck>` entity, and `CRABEquippedEntity::SetData` throws if a transmitted message size mismatches:
 
 ```xml
-<pipuck id="pipuck0" led_medium="leds" rab_data_size="10" rab_range="1.5">
+<pipuck id="pipuck0" led_medium="leds" rab_data_size="52" rab_range="1.5">
 ```
 
 ### `ds` vs `rab_range` are NOT the same
@@ -91,7 +115,7 @@ The `led_medium` attribute on `<pipuck>` should reference a `<led>` medium (not 
 </phybot_controller>
 
 <!-- In <arena> section -->
-<pipuck id="pipuck0" led_medium="leds" rab_data_size="10" rab_range="1.5">
+<pipuck id="pipuck0" led_medium="leds" rab_data_size="52" rab_range="1.5">
   <body position="0.0,0.0,0"/>
   <controller config="phybot_controller"/>
 </pipuck>
@@ -104,12 +128,12 @@ The `config` attribute value must match the controller `id`.
 ## ARGoS Logging
 
 - **`LOG`**: Always prints to console. Use for debugging output.
-- **`RLOG`**: Requires log category filtering (e.g., `-log <entity_id>`). Does NOT appear in default console output. Avoid for debug prints.
-- **`_Float16` cannot stream to `ostream`**: Cast to `float` before logging: `static_cast<float>(value)`.
+- **`RLOG`**: Per-robot logger — does NOT appear in console output, but is viewable in the simulator GUI (per-robot log window). Use it for per-robot debug messages that you want to inspect live in the simulation. Also filterable via `-log <entity_id>`.
+- **`Real` (double) cannot stream to `ostream` directly in some ARGoS builds**: Cast to `float` before logging: `static_cast<float>(value)`.
 
 ```cpp
 LOG << "[Role] " << GetId() << ": NORMAL" << std::endl;
-RLOG << "pressure=" << static_cast<float>(inMsg.senderEstPressure) << std::endl;
+RLOG << "pressure=" << static_cast<float>(inMsg.m_fSenderEstPressure) << std::endl;
 ```
 
 ---
@@ -132,20 +156,46 @@ Note: `CRandom::GetInstance()` does NOT exist. Always use `CRandom::CreateRNG("a
 
 ## Data Structures
 
-### `SPhybotMessage` (`common/phybot_message.h`)
+### `CPhybotMessage` (`ds/message/phybot_message.hpp`)
+
+Abstract base class with 5 fields:
 
 ```cpp
-struct SPhybotMessage {
-   _Float16 senderEstPressure;   // Estimated pressure p_j
-   _Float16 edgeConductivity;    // Conductivity D_ji
-   _Float16 edgeFlow;            // Flow Q_ji
-   uint32_t timestamp;           // Time step t
-} __attribute__((packed));       // MUST be 10 bytes
+class CPhybotMessage {
+public:
+    Real m_fRelativeLocation;    // Distance to sender (set by receiver from RAB range)
+    Real m_fSenderEstPressure;   // Estimated pressure p_j
+    Real m_fEdgeConductivity;    // Conductivity D_ji
+    Real m_fEdgeFlow;            // Flow Q_ji
+    uint32_t m_unTimestamp;      // Time step t
+
+    virtual CByteArray serialize() const = 0;
+    virtual void deserialize(CByteArray& msgBytes) = 0;
+};
 ```
 
-Wire format only uses `_Float16`. All internal state/params use `Real` (double) — only serialize to `_Float16` on the wire.
+### `CPhybotHeavyMessage` (`ds/message/phybot_heavy_message.hpp`)
 
-### `ERobotRole` (`common/robot_role.h`)
+Concrete implementation using `Real` (double) for all fields. Serializes via `CByteArray <<`/`>>` operators.
+
+### `CPhybotMessageList` (`ds/message/phybot_message_list.hpp`)
+
+Manages incoming and outgoing message deques with sliding-window expiry based on timestamp.
+
+### `SNeighborReading` (`ds/neighbor_reading.hpp`)
+
+Wraps an incoming RAB message with spatial metadata:
+
+```cpp
+struct SNeighborReading {
+    std::unique_ptr<CPhybotMessage> msg;
+    Real range;          // Distance from RAB sensor
+    CRadians bearing;    // Horizontal bearing angle
+    u_int8_t sector;     // Sector index (0-7) derived from bearing
+};
+```
+
+### `ERobotRole` (`algorithms/robot_role.hpp`)
 
 ```cpp
 enum class ERobotRole { NORMAL, SOURCE, TARGET };
@@ -159,9 +209,18 @@ enum class ERobotRole { NORMAL, SOURCE, TARGET };
 pipuck_ws/
 ├── CMakeLists.txt              # Top-level build
 ├── compile_ws.sh               # Build script (cmake + make)
-├── common/
-│   ├── phybot_message.h        # SPhybotMessage, serialize/deserialize
-│   └── robot_role.h            # ERobotRole enum
+├── algorithms/
+│   ├── di_pl.hpp               # Di-PL algorithm class declaration
+│   ├── di_pl.cpp               # Di-PL algorithm implementation
+│   └── robot_role.hpp          # ERobotRole enum class
+├── ds/
+│   ├── neighbor_reading.hpp    # SNeighborReading struct
+│   └── message/
+│       ├── phybot_message.hpp      # Abstract message interface
+│       ├── phybot_heavy_message.hpp # Heavy message declaration
+│       ├── phybot_heavy_message.cpp # Heavy message serialization
+│       ├── phybot_message_list.hpp  # Message buffer manager declaration
+│       └── phybot_message_list.cpp  # Message buffer manager implementation
 ├── controllers/
 │   ├── CMakeLists.txt
 │   ├── phybot_controller.hpp   # Controller class declaration
@@ -182,9 +241,18 @@ pipuck_ws/
 ## Current Task Status
 
 Phase 1 is complete:
-- [x] Task 1.1: `SPhybotMessage` struct + serialization (10 bytes packed)
+- [x] Task 1.1: `CPhybotMessage` class + `CPhybotHeavyMessage` serialization
 - [x] Task 1.2: State storage (message history with sliding window, sector conductivities, roles)
 - [x] Task 1.3: Parameter loading from XML + `phybot_test.argos` configured
 - [x] Task 1.4: LED visual debugging (`updateLEDs()` color-codes roles)
 
-**Next**: Phase 2 (Di-PL pressure/flow updates) and Milestone 1 (static flow validation).
+Phase 2 is partially complete:
+- [x] Pressure estimation (incoming/outgoing)
+- [x] Exponential smoothing update
+- [x] Safe decay function `g()`
+- [x] Sector-based lowest-pressure neighbor selection
+- [ ] `calcOutgoingEstFlux`, `calcOutgoingFlux`, `updateConductivity` (not yet implemented)
+- [ ] Wire Di-PL updates into `ControlStep()`
+- [ ] Populate outgoing messages with real data
+
+**Next**: Complete Phase 2 (Di-PL flux/conductivity updates) and Milestone 1 (static flow validation).
