@@ -16,12 +16,12 @@ namespace argos {
         // Sets the algorithm hyperparameters
         static void setParameters(Real Kp, Real alpha);
         static Real updatePressure(const std::deque<std::unique_ptr<CPhybotMessage>>& msgList, Real oldPressure, Real xt);
-        static Real calcTotalIncomingFlux(const std::deque<std::unique_ptr<CPhybotMessage>>& msgList, Real oldFlux);
+        static Real calcTotalIncomingFlux(const std::deque<std::unique_ptr<CPhybotMessage>>& incMsgList, Real oldFlux);
         static Real calcOutgoingEstFlux(const std::unique_ptr<CPhybotMessage>& msg, Real pressure);
         static Real calcOutgoingFlux(Real estFlux, Real totalFlux, Real totalEstFlux);
         static Real updateConductivity(Real oldConductivity, Real flux, u_int32_t timestepSize);
-        static Real calcIncomingPressure(const std::deque<std::unique_ptr<CPhybotMessage>>& msgList);
-        static Real calcOutgoingPressure(const std::deque<std::unique_ptr<CPhybotMessage>>& msgList, Real totalPressures);
+        static Real calcIncomingPressure(const std::deque<std::unique_ptr<CPhybotMessage>>& incMsgList);
+        static Real calcOutgoingPressure(const std::deque<std::unique_ptr<CPhybotMessage>>& outMsgList, Real totalPressures);
 
         private:
         static constexpr Real EPSILON = 1e-6f;
