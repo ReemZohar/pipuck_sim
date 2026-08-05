@@ -20,15 +20,15 @@ namespace argos {
         static Real calcOutgoingEstFlux(const std::unique_ptr<CPhybotMessage>& msg, Real pressure);
         static Real calcOutgoingFlux(Real estFlux, Real totalFlux, Real totalEstFlux);
         static Real updateConductivity(Real oldConductivity, Real flux, u_int32_t timestepSize);
+        static Real calcIncomingPressure(const std::deque<std::unique_ptr<CPhybotMessage>>& msgList);
+        static Real calcOutgoingPressure(const std::deque<std::unique_ptr<CPhybotMessage>>& msgList, Real totalPressures);
 
         private:
         static constexpr Real EPSILON = 1e-6f;
-        
+
         static Real m_fKp;
         static Real m_fAlpha;
 
-        static Real calcIncomingPressure(const std::deque<std::unique_ptr<CPhybotMessage>>& msgList);
-        static Real calcOutgoingPressure(const std::deque<std::unique_ptr<CPhybotMessage>>& msgList, Real totalPressures);
         // Safe decay function
         static Real g(Real newPressure, Real oldPressure);
     };
