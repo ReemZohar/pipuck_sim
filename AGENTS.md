@@ -24,6 +24,9 @@ All code implementations in the **[pipuck_ws](pipuck_ws)** workspace must adhere
 14. **Line Length Limit**: No source line may exceed 130 characters. If a statement would exceed the limit, break it across lines or shorten it where possible.
 15. **Reasonable Name Length**: Function and variable names must strike a balance between descriptiveness and brevity. Prefer concise names that fit on a single line and are easy to scan; avoid long compound names when a shorter one conveys the same intent.
 16. **SOLID Principles**: Code should follow the SOLID principles — single responsibility, open/closed, Liskov substitution, interface segregation, and dependency inversion — keeping classes focused on one purpose, shallow interfaces, and dependencies on abstractions rather than concrete implementations.
+17. **Class Documentation**: Each class (and standalone enum/struct) must carry a Doxygen doc comment describing its purpose and role within the simulation. Place it inside the `namespace` block, immediately before the class/struct/enum declaration. Use `@class`/`@enum`/`@struct` and `@brief` tags; informativeness beats brevity, but keep it scannable (a short paragraph at most). Do not restate implementation details already covered by the file's own comments.
+18. **Function Documentation**: Document public functions (and non-obvious private helpers) with Doxygen-style comments using `@brief`, `@param`, and `@return` tags as appropriate. Do not document obvious one-liners where the name and signature are self-explanatory.
+19. **Documentation in .hpp Only**: All documentation (class docs and function comments) belongs exclusively in `.hpp` files. Never add doc comments to `.cpp` files — they must contain only the `#include` of their header and the implementation.
 
 
 

@@ -50,7 +50,7 @@ namespace argos {
             // Assign relative distance (Range) measured by RAB sensor
             inMsg->m_fRelativeLocation = packets[i].Range;
 
-            // Calculate sector from horizontal bearing angle in [0, 2π)
+            // Calculate sector from horizontal bearing angle in [0, 2*pi)
             CRadians bearing = packets[i].HorizontalBearing;
             Real angle = bearing.UnsignedNormalize().GetValue();
             Real sectorAngle = (2.0 * M_PI) / NUM_SECTORS;
@@ -74,8 +74,7 @@ namespace argos {
         // Selects the receiver with the lowest pressure per sector. One receiver per sector, valid until the messages are archived below.
         std::array<const CPhybotMessage*, NUM_SECTORS> chosenReceivers = selectSectorReceivers(currentNeighborReadings);
 
-        // Di-PL per-tick updates (flux routing via chosenReceivers, conductivity) go here before archiving.
-
+        // Di-PL per-tick updates (flux routing via chosenReceivers, conductivity)
         for(auto& neighbor : currentNeighborReadings) {
             if(neighbor.msg != nullptr) {
                 m_messageList.addMessage(std::move(neighbor.msg), true);
@@ -90,12 +89,13 @@ namespace argos {
     std::array<const CPhybotMessage*, CPhybotController::NUM_SECTORS> CPhybotController::selectSectorReceivers(const std::vector<SNeighborReading>& neighbors) {
         std::array<const CPhybotMessage*, NUM_SECTORS> chosenReceivers{};
         Real minPressure[NUM_SECTORS];
+        
         for(u_int8_t i = 0; i < NUM_SECTORS; ++i) {
             minPressure[i] = std::numeric_limits<Real>::max();
         }
 
         for(const auto& neighbor : neighbors) {
-            if(neighbor.msg != nullptr && neighbor.sector < NUM_SECTORS) {
+            if((neighbor.msg != nullptr) && (neighbor.sector < NUM_SECTORS)) {
                 if(neighbor.msg->m_fSenderEstPressure < minPressure[neighbor.sector]) {
                     minPressure[neighbor.sector] = neighbor.msg->m_fSenderEstPressure;
                     chosenReceivers[neighbor.sector] = neighbor.msg.get();

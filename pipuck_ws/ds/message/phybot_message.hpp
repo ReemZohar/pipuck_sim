@@ -7,9 +7,13 @@
 namespace argos {
 
     /**
-     * @brief Abstract interface for Pi-Puck RAB message serialization.
+     * @class CPhybotMessage
+     * @brief Abstract RAB message interface exchanged between Pi-Puck agents.
      *
-     * Represents the tuple <RelativeLocation, SenderPressure, EdgeConductivity, EdgeFlow, Timestamp>.
+     * Encodes the tuple:
+     * <RelativeLocation, SenderPressure, EdgeConductivity, EdgeFlow, Timestamp>,
+     * describing the sender's view of one channel so receivers
+     * can update their pressure and conductivity estimates.
      */
     class CPhybotMessage {
     public:
@@ -20,7 +24,17 @@ namespace argos {
         uint32_t m_unTimestamp;
         
         virtual ~CPhybotMessage() = default;
+
+        /**
+         * @brief Serializes the message fields into a byte array.
+         * @return Byte representation ready for RAB transmission.
+         */
         virtual CByteArray serialize() const = 0;
+
+        /**
+         * @brief Deserializes a byte array into the message fields.
+         * @param msgBytes Byte array received from the RAB sensor.
+         */
         virtual void deserialize(CByteArray& msgBytes) = 0;
     };
 
