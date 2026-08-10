@@ -88,6 +88,8 @@ namespace argos {
         Real m_fDeltaT;
         Real m_fI0;
         Real m_fPMax;
+        Real m_fDInit;
+        Real m_fQc;
 
         // Motion parameters
         Real m_fWp;

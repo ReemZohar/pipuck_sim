@@ -34,6 +34,8 @@
         <deltaT value="0.1"/>
         <i0 value="0.01"/>
         <pMax value="1.0"/>
+        <dInit value="1.0"/>
+        <Qc value="2.0"/>
 
         <!-- Motion parameters -->
         <wp value="0.375"/>
