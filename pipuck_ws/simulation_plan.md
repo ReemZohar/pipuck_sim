@@ -2,7 +2,7 @@
 
 This plan implements the Di-PL and Soap Bubble Optimization algorithms from `docs/algorithm.pdf` and `docs/algorithm_addons.pdf` in the Pi-Puck ARGoS simulator.
 
-**Current point:** Tasks 0–1, 2.1, 2.2.1, and 2.2.2 are implemented. Complete Task 2.0 before continuing with Task 2.2.3.
+**Current point:** The Phase 0 foundation, message serialization, core state/configuration, LED mapping, and test foundation are implemented. Complete Tasks 1.2.3 and 1.3.4 next, then complete Task 2.0 before continuing with Task 2.2.3.
 
 ---
 
@@ -34,30 +34,28 @@ Verify the build pipeline for a new controller before writing algorithm code.
 
 - [x] **1.2.1:** Store incoming and outgoing message history for the last `H` ticks and discard expired entries.
 - [x] **1.2.2:** Store pressure `p_i`, food/flux `Q_i`, timestamp, role, and eight sector conductivities `D_i,k`.
-- [x] **1.2.3:** Store each neighbor message with its locally sensed range, bearing, and sector.
-- [ ] **1.2.4:** Add the Algorithm 1 initialization state: `D_init` and capacity `Q_c`.
+- [ ] **1.2.3:** Archive complete `SNeighborReading` records in incoming and outgoing history, not only `CPhybotMessage` pointers. Preserve the decoded message plus the receiver's locally sensed range, bearing, and sector; use this local metadata for sector state and edge length without adding it to the broadcast payload.
+- [x] **1.2.4:** Store the Algorithm 1 initial values: `D_init` and capacity `Q_c`.
 
 ### Task 1.3: Parameter Loading and XML Configuration
 
 - [x] **1.3.1:** Load the current Di-PL and motion parameters from `<params>`.
 - [x] **1.3.2:** Configure `rab_data_size="52"` and `rab_range` in every experiment.
-- [ ] **1.3.3:** Load `D_init` and `Q_c`; reject invalid physical/numerical values at `Init()`.
-- [ ] **1.3.4:** Before Phase 3, add the remaining paper parameters: `lambdaL`, `alphaC`, `alphaS`, `wd`, and the numerical epsilon.
+- [x] **1.3.3:** Load `D_init` and `Q_c` from `<params>`.
+- [ ] **1.3.4:** Reject invalid physical/numerical values at `Init()` before using them.
+- [x] **1.3.5:** Load `alphaC`, `alphaS`, `wd`, and the numerical epsilon; derive `lambdaL` from `0.75 * communicationRange` and `deltaT` from the paper's 150-step decay rule.
 
 ### Task 1.4: LED Visual Debugging
 
 - [x] **1.4.1:** Retrieve the Pi-Puck LED actuator.
-- [x] **1.4.2:** Use green for `SOURCE`, blue for `TARGET`/nest, and white for `NORMAL`.
+- [x] **1.4.2:** Define the role-to-LED mapping: green for `SOURCE`, blue for `TARGET`/nest, and white for `NORMAL`.
 
 ### Task 1.5: Initialization Tests
 
-- [ ] **1.5.1:** Create `pipuck_ws/tests/` for deterministic C++ tests and a `tests/CMakeLists.txt` for their test executables.
-- [ ] **1.5.2:** Configure GoogleTest with `find_package(GTest REQUIRED)` and add the tests subdirectory. Register each executable through `add_phybot_test()` so it is included in the generated test-executable list.
-- [ ] **1.5.3:** Create executable `tests/run_tests.sh`. It configures `build/` with CMake, builds the test targets, and runs every executable in the generated list directly; it must return a non-zero status on any failure.
-- [ ] **1.5.4:** Add deterministic tests for message round trips and the exact 52-byte payload.
-- [ ] **1.5.5:** Test empty history, no receiver, and zero conductivity/range; no result may be non-finite.
-- [ ] **1.5.6:** Test `Reset()` restores empty history, zero timestamp/food, `D_init`, and no stale outgoing message.
-- [ ] **1.5.7:** Test source/target/normal initialization: `+P_max`, `-P_max`, and zero pressure respectively.
+- [x] **1.5.1:** Create `pipuck_ws/tests/` for deterministic C++ tests and a `tests/CMakeLists.txt` for their test executables.
+- [x] **1.5.2:** Configure GoogleTest with `find_package(GTest REQUIRED)` and add the tests subdirectory. Register each executable through `add_phybot_test()` so it is included in the generated test-executable list.
+- [x] **1.5.3:** Create executable `tests/run_tests.sh`. It configures `build/` with CMake, builds the test targets, and runs every executable in the generated list directly; it must return a non-zero status on any failure.
+- [x] **1.5.4:** Add deterministic tests for message round trips and the exact 52-byte payload.
 
 ---
 
@@ -69,17 +67,20 @@ Implement Algorithm 1 as receive → incoming pressure update → send → outgo
 
 Complete this task now, before Task 2.2.3.
 
-- [ ] **2.0.1:** Implement local source/target detection. A controller sets its own role from its sensors; loop functions configure the environment and gather metrics but do not give controllers global swarm state.
-- [ ] **2.0.2:** On initialization/reset, set normal pressure to zero, source pressure to `+P_max`, target pressure to `-P_max`, every sector conductivity to `D_init`, and every flow to zero.
-- [ ] **2.0.3:** Define the RAB adaptation protocol. RAB broadcasts one 52-byte packet, while Algorithm 1 has directed `(D_ij, Q_ij)` messages. Document how the intended sector/receiver is identified, how other receivers ignore the message, and how the receiver obtains edge length from its own range reading.
-- [ ] **2.0.4:** Verify the protocol with two neighbors in different sectors: only the intended receiver records the flow as incoming.
+- [ ] **2.0.1:** Configure static source/target entities in a minimal experiment so controllers can sense them locally. Loop functions configure the environment and gather metrics but do not assign controller roles.
+- [ ] **2.0.2:** Implement local source/target detection. A controller sets only its own role from sensor readings.
+- [ ] **2.0.3:** On initialization/reset, set normal pressure to zero, source pressure to `+P_max`, target pressure to `-P_max`, every sector conductivity to `D_init`, and every flow to zero.
+- [ ] **2.0.4:** Apply the role-to-LED mapping after initialization and whenever the locally detected role changes.
+- [ ] **2.0.5:** Add deterministic controller-fixture tests for role initialization (`+P_max`, `-P_max`, `0`) and `Reset()` (empty history, zero timestamp/food, `D_init`, and no stale outgoing message).
+- [ ] **2.0.6:** Define the RAB adaptation protocol. RAB broadcasts one 52-byte packet, while Algorithm 1 has directed `(D_ij, Q_ij)` messages. Document how the intended sector/receiver is identified, how other receivers ignore the message, and how the receiver obtains edge length from its own range reading.
+- [ ] **2.0.7:** Verify the protocol with two neighbors in different sectors: only the intended receiver records the flow as incoming.
 
 ### Task 2.1: Implement Pressure Updates (Hagen–Poiseuille)
 
 - [x] **2.1.1:** Implement incoming pressure (Eq. 1): mean sender pressure minus `L_ji Q_ji / D_ji`.
 - [x] **2.1.2:** Implement outgoing pressure (Eq. 2): mean receiver pressure plus `L_ij Q_ij / D_ij`.
 - [x] **2.1.3:** Implement exponential smoothing and safe pressure decay (Eq. 3).
-- [ ] **2.1.4:** Test Eq. 1–3 with known messages, an empty history, and zero conductivity.
+- [ ] **2.1.4:** Test Eq. 1–3 with known messages, empty history/no receiver, zero conductivity, and zero range; no result may be non-finite.
 
 ### Task 2.2: Implement Flux and Conductivity Updating
 
@@ -87,7 +88,7 @@ Complete this task now, before Task 2.2.3.
 - [x] **2.2.2:** Select at most one lowest-pressure receiver per sector.
 - [ ] **2.2.3:** For each selected receiver, calculate estimated outgoing flow `Qhat_ij = D_ij / L_ij * (p_i - p_j)`; normalize positive estimates so their total equals at most `Q_i` (Eq. 5). Protect all zero denominators.
 - [ ] **2.2.4:** Update the selected sector/edge conductivity with Eq. 6. Define the non-negative reinforcement function `f(|Q_ij|)` in the implementation and ensure an unused edge decays.
-- [ ] **2.2.5:** Subtract each sent flow from `Q_i`, record the outgoing logical message, and broadcast it using Task 2.0.3's protocol.
+- [ ] **2.2.5:** Subtract each sent flow from `Q_i`, record the outgoing logical message, and broadcast it using Task 2.0.6's protocol.
 - [ ] **2.2.6:** Test flow conservation, used-edge reinforcement, unused-edge decay, and no-receiver behavior.
 
 ### Task 2.3: Wire Algorithm 1 into `ControlStep()`
@@ -144,10 +145,9 @@ Before motion, validate Di-PL with motion disabled.
 
 ## Phase 5: Loop Functions and Metrics
 
-### Task 5.1: Sources, Targets, and Dynamics
+### Task 5.1: Dynamic Targets
 
-- [ ] **5.1.1:** Configure static source/target entities and their local controller detection.
-- [ ] **5.1.2:** Add moving targets only after static terminals work; verify role changes arise from local sensing.
+- [ ] **5.1.1:** Add moving targets only after static terminals and the static-flow milestone work; verify role changes arise from local sensing.
 
 ### Task 5.2: Track Evaluation Metrics
 
