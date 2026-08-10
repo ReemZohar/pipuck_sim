@@ -23,6 +23,7 @@
 #include "../algorithms/di_pl.hpp"
 
 #include <array>
+#include <cmath>
 #include <deque>
 #include <memory>
 #include <limits>
@@ -80,6 +81,9 @@ namespace argos {
 
         // Parameters
         static constexpr u_int8_t NUM_SECTORS = 8;
+        static constexpr Real CONDUCTIVITY_TARGET = 0.001f;
+        static constexpr u_int32_t CONDUCTIVITY_DECAY_STEPS = 150;
+        static constexpr Real LENGTH_NORMALIZATION_FACTOR = 0.75f;
 
         // Di-PL parameters
         Real m_fAlpha;
@@ -100,6 +104,12 @@ namespace argos {
         Real m_fGamma;
         Real m_fK;
         Real m_fDs;
+        Real m_fCommunicationRange;
+        Real m_fLambdaL;
+        Real m_fAlphaC;
+        Real m_fAlphaS;
+        Real m_fWd;
+        Real m_fEpsilon;
         u_int32_t m_unH;
 
         // State variables
@@ -113,6 +123,11 @@ namespace argos {
 
         void updateLEDs();
         void extractParameters(TConfigurationNode& t_tree);
+
+        /**
+         * @brief Derives paper-defined values from direct configuration inputs.
+         */
+        void calculateDerivedParameters();
 
         /**
          * @brief Selects the lowest-pressure neighbor in each angular sector.
