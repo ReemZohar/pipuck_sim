@@ -1,3 +1,6 @@
+#ifndef PHYBOT_CONTROLLER_HPP
+#define PHYBOT_CONTROLLER_HPP
+
 #include <argos3/core/control_interface/ci_controller.h>
 #include <argos3/plugins/robots/pi-puck/control_interface/ci_pipuck_differential_drive_actuator.h>
 #include <argos3/plugins/robots/pi-puck/control_interface/ci_pipuck_color_leds_actuator.h>
@@ -12,23 +15,58 @@
 #include <argos3/core/simulator/space/space.h>
 #include <argos3/core/utility/datatypes/color.h>
 
-#include "../algorithms/message/phybot_message.hpp"
+#include "../ds/message/phybot_message.hpp"
+#include "../ds/message/phybot_heavy_message.hpp"
+#include "../ds/neighbor_reading.hpp"
 #include "../algorithms/robot_role.hpp"
-#include "../algorithms/message/phybot_message_list.hpp"
+#include "../ds/message/phybot_message_list.hpp"
+#include "../algorithms/di_pl.hpp"
 
+#include <array>
 #include <deque>
 #include <memory>
+#include <limits>
+#include <vector>
+
 
 namespace argos {
 
+    /**
+     * @class CPhybotController
+     * @brief Pi-Puck agent controller that runs the Di-PL adaptation loop.
+     *
+     * Owns the full per-agent state (role, estimated pressure, per-sector
+     * conductivities, RAB message archive) and the sensor/actuator handles. Each
+     * tick it turns neighbor RAB packets into sector-indexed readings, selects the
+     * lowest-pressure receiver per sector, and broadcasts its own state so the
+     * swarm can route flux between sources and targets. All hyperparameters are
+     * loaded from the .argos XML tree.
+     */
     class CPhybotController : public CCI_Controller {
 
     public:
-        CPhybotController() {}
-        virtual ~CPhybotController() {}
-
+        /**
+         * @brief Initializes the controller from the .argos XML configuration.
+         *
+         * Wires all sensor/actuator handles, parses hyperparameters, configures
+         * the Di-PL algorithm, and resets all state to starting values.
+         *
+         * @param t_tree Root node of the controller's XML configuration block.
+         */
         void Init(TConfigurationNode& t_tree) override;
+
+        /**
+         * @brief Runs one tick of the controller loop.
+         *
+         * Reads RAB neighbor packets, maps bearings to sectors, selects the
+         * lowest-pressure receiver per sector, archives messages, and broadcasts
+         * the controller's own state.
+         */
         void ControlStep() override;
+
+        /**
+         * @brief Resets all internal state for a simulation restart.
+         */
         void Reset() override;
 
     private:
@@ -65,12 +103,23 @@ namespace argos {
         // State variables
         ERobotRole m_eRole;
         u_int32_t m_unTimestamp;
-        Real m_fEsimatedPressure;
+        Real m_fEstimatedPressure;
         Real m_fFoodReceived;
         Real m_fSectorConductivities[NUM_SECTORS];
         CPhybotMessageList m_messageList;
         std::unique_ptr<CPhybotMessage> m_outMsg;
-        
+
         void updateLEDs();
+        void extractParameters(TConfigurationNode& t_tree);
+
+        /**
+         * @brief Selects the lowest-pressure neighbor in each angular sector.
+         *
+         * @param neighbors List of decoded neighbor readings from the current tick.
+         * @return Array of one receiver pointer per sector (nullptr if no neighbor was heard).
+         */
+        std::array<const CPhybotMessage*, NUM_SECTORS> selectSectorReceivers(const std::vector<SNeighborReading>& neighbors);
     };
 }
+
+#endif
