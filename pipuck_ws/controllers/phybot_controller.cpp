@@ -25,7 +25,7 @@ namespace argos {
         m_fFoodReceived = 0;
         m_eRole = ERobotRole::NORMAL;
         for(u_int8_t i = 0; i < NUM_SECTORS; i++) {
-            m_fSectorConductivities[i] = 0;
+            m_fSectorConductivities[i] = m_fDInit;
         }
     }
 
@@ -114,7 +114,7 @@ namespace argos {
         m_eRole = ERobotRole::NORMAL;
         m_messageList.clear();
         for(u_int8_t i = 0; i < NUM_SECTORS; i++) {
-            m_fSectorConductivities[i] = 0;
+            m_fSectorConductivities[i] = m_fDInit;
         }
     }
 
@@ -133,6 +133,8 @@ namespace argos {
         GetNodeAttribute(GetNode(t_tree, "gammaQ"), "value", m_fGammaQ);
         GetNodeAttribute(GetNode(t_tree, "i0"), "value", m_fI0);
         GetNodeAttribute(GetNode(t_tree, "pMax"), "value", m_fPMax);
+        GetNodeAttribute(GetNode(t_tree, "dInit"), "value", m_fDInit);
+        GetNodeAttribute(GetNode(t_tree, "Qc"), "value", m_fQc);
 
         GetNodeAttribute(GetNode(t_tree, "wp"), "value", m_fWp);
         GetNodeAttribute(GetNode(t_tree, "betaD"), "value", m_fBetaD);
