@@ -6,7 +6,7 @@
   <!-- ************************* -->
   <framework>
     <system threads="0" />
-    <experiment length="10" ticks_per_second="10" random_seed="0" />
+    <experiment length="15" ticks_per_second="10" random_seed="0" />
   </framework>
   
   <!-- *************** -->
@@ -27,26 +27,32 @@
         <range_and_bearing implementation="medium" medium="rab" show_rays="true" />
       </sensors>
       <params>
-        <!-- Di-PL parameters -->
-        <alpha value="0.1"/>
-        <kp value="1.0"/>
-        <gammaQ value="0.01"/>
-        <deltaT value="0.1"/>
-        <i0 value="0.01"/>
-        <pMax value="1.0"/>
-        <dInit value="1.0"/>
-        <Qc value="2.0"/>
+        <!-- Phybot state parameters -->
+        <communicationRange value="1.5"/>
+        <ds value="2"/>
+        <H value="5"/>
 
-        <!-- Motion parameters -->
-        <wp value="0.375"/>
-        <betaD value="0.01"/>
-        <alphaD value="0.01"/>
-        <epsilonD value="0.001"/>
+        <!-- Phybot movement parameters -->
+        <wp value="0.275"/>
+        <epsilonD value="0.05"/>
+        <alphaD value="0"/>
+        <betaD value="2.5"/>
+        <alphaC value="45"/>
+        <alphaS value="0.1"/>
         <ie value="0.1"/>
-        <gamma value="1.0"/>
-        <k value="3"/>
-        <ds value="0.3"/>
-        <H value="10"/>
+        <gamma value="0.75"/>
+        <epsilon value="0.00001"/>
+        <k value="1"/>
+        <wd value="0.25"/>
+
+        <!-- Di-PL parameters -->
+        <i0 value="2"/>
+        <alpha value="0.75"/>
+        <pMax value="500"/>
+        <Qc value="2.0"/>
+        <kp value="0.995"/>
+        <gammaQ value="0.25"/>
+        <dInit value="1.0"/>
       </params>
     </phybot_controller>
   </controllers>

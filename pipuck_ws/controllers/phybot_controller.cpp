@@ -14,6 +14,7 @@ namespace argos {
 
         // Extracts all hyperparameters from the XML configuration file and sets them to the corresponding member variables.
         extractParameters(t_tree);
+        calculateDerivedParameters();
 
         // Sets the hyperparameters for the Di-PL algorithm
         CDiPL::setParameters(m_fKp, m_fAlpha, m_fDeltaT);
@@ -128,7 +129,6 @@ namespace argos {
         // Di-PL hyperparameters
         GetNodeAttribute(GetNode(t_tree, "alpha"), "value", m_fAlpha);
         GetNodeAttribute(GetNode(t_tree, "kp"), "value", m_fKp);
-        GetNodeAttribute(GetNode(t_tree, "deltaT"), "value", m_fDeltaT);
 
         GetNodeAttribute(GetNode(t_tree, "gammaQ"), "value", m_fGammaQ);
         GetNodeAttribute(GetNode(t_tree, "i0"), "value", m_fI0);
@@ -144,7 +144,18 @@ namespace argos {
         GetNodeAttribute(GetNode(t_tree, "gamma"), "value", m_fGamma);
         GetNodeAttribute(GetNode(t_tree, "k"), "value", m_fK);
         GetNodeAttribute(GetNode(t_tree, "ds"), "value", m_fDs);
+        GetNodeAttribute(GetNode(t_tree, "communicationRange"), "value", m_fCommunicationRange);
+        GetNodeAttribute(GetNode(t_tree, "alphaC"), "value", m_fAlphaC);
+        GetNodeAttribute(GetNode(t_tree, "alphaS"), "value", m_fAlphaS);
+        GetNodeAttribute(GetNode(t_tree, "wd"), "value", m_fWd);
+        GetNodeAttribute(GetNode(t_tree, "epsilon"), "value", m_fEpsilon);
         GetNodeAttribute(GetNode(t_tree, "H"), "value", m_unH);
+    }
+
+    void CPhybotController::calculateDerivedParameters() {
+        m_fDeltaT = std::pow(m_fDInit / CONDUCTIVITY_TARGET,
+                             1.0f / CONDUCTIVITY_DECAY_STEPS) - 1.0f;
+        m_fLambdaL = LENGTH_NORMALIZATION_FACTOR * m_fCommunicationRange;
     }
 
     REGISTER_CONTROLLER(CPhybotController, "phybot_controller");
