@@ -7,4 +7,8 @@ build_dir="${script_dir}/build"
 
 cmake -S "${project_dir}" -B "${build_dir}" -DBUILD_TESTING=ON
 cmake --build "${build_dir}"
-ctest --test-dir "${build_dir}" --output-on-failure
+
+# Read the generated list and execute each test sequentially
+while IFS= read -r test_executable; do
+    "${test_executable}"
+done < "${build_dir}/tests/test_executables.txt"

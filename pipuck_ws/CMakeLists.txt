@@ -23,7 +23,7 @@ link_directories(${ARGOS_LIBRARY_DIR})
 add_subdirectory(controllers)
 add_subdirectory(loop_functions)
 
-include(CTest)
+option(BUILD_TESTING "Build the project tests" ON)
 if(BUILD_TESTING)
   find_package(GTest REQUIRED)
   add_subdirectory(tests)
