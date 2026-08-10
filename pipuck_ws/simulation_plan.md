@@ -52,8 +52,8 @@ Verify the build pipeline for a new controller before writing algorithm code.
 ### Task 1.5: Initialization Tests
 
 - [ ] **1.5.1:** Create `pipuck_ws/tests/` for deterministic C++ tests and a `tests/CMakeLists.txt` for their test executables.
-- [ ] **1.5.2:** Configure GoogleTest with find_package(GTest REQUIRED), enable CTest, add the tests subdirectory, and register each GoogleTest executable with gtest_discover_tests().
-- [ ] **1.5.3:** Create executable `tests/run_tests.sh`. It configures `build/` with CMake, builds the test targets, and runs `ctest --test-dir build --output-on-failure`; it must return a non-zero status on any failure.
+- [ ] **1.5.2:** Configure GoogleTest with `find_package(GTest REQUIRED)` and add the tests subdirectory. Register each executable through `add_phybot_test()` so it is included in the generated test-executable list.
+- [ ] **1.5.3:** Create executable `tests/run_tests.sh`. It configures `build/` with CMake, builds the test targets, and runs every executable in the generated list directly; it must return a non-zero status on any failure.
 - [ ] **1.5.4:** Add deterministic tests for message round trips and the exact 52-byte payload.
 - [ ] **1.5.5:** Test empty history, no receiver, and zero conductivity/range; no result may be non-finite.
 - [ ] **1.5.6:** Test `Reset()` restores empty history, zero timestamp/food, `D_init`, and no stale outgoing message.
