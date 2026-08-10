@@ -9,11 +9,13 @@ function(add_phybot_test test_target)
   set_property(GLOBAL APPEND PROPERTY PHYBOT_TEST_TARGETS ${test_target})
 endfunction()
 
-# Each test file should be added as a separate add_phybot_test() call.
+# Add all test files and dependencies here.
 add_phybot_test(
-  phybot_message_test
+  phybot_tests
   ../ds/message/phybot_heavy_message.cpp
   message/phybot_message_test.cpp
+  ../ds/message/phybot_message_list.cpp
+  message/phybot_message_list_test.cpp
 )
 
 # Used by run_tests.sh to get the list of test executables to run.
