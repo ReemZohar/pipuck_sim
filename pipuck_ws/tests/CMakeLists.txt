@@ -16,6 +16,9 @@ add_phybot_test(
   message/phybot_message_test.cpp
   ../ds/message/phybot_message_list.cpp
   message/phybot_message_list_test.cpp
+  algorithms/di_pl_test.cpp
+  controllers/phybot_controller_reset_test.cpp
+  controllers/phybot_controller_role_test.cpp
 )
 
 # Used by run_tests.sh to get the list of test executables to run.
